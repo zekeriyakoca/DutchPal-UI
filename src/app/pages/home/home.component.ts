@@ -19,7 +19,7 @@ export class HomeComponent {
   constructor(private apiService: ApiService) {}
   askQuestion() {
     this.apiService
-      .chat(this.prompt)
+      .ask(this.prompt)
       .pipe(first())
       .subscribe((response) => {
         this.answer.set(response);
