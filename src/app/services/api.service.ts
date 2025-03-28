@@ -41,4 +41,59 @@ export class ApiService {
       .post<AskResponse>(`${environment.apiUrl}/ask`, body)
       .pipe(map((response) => response.response));
   }
+
+  getVocabulary(
+    level: string,
+    numberOfEntries: number,
+    bookId: number
+  ): Observable<string> {
+    const body = {
+      message: '',
+      page: 'vocab',
+      number_of_entries: numberOfEntries,
+      level,
+      book_id: bookId,
+    } as AskRequest;
+    return this._httpClient
+      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .pipe(map((response) => response.response));
+  }
+
+  getSentences(
+    level: string,
+    numberOfEntries: number,
+    bookId: number
+  ): Observable<string> {
+    const body = {
+      message: '',
+      page: 'sentences',
+      number_of_entries: numberOfEntries,
+      level,
+      book_id: bookId,
+    } as AskRequest;
+    return this._httpClient
+      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .pipe(map((response) => response.response));
+  }
+
+  generateQuiz(
+    cefr: string,
+    difficulty: number,
+    numberOfEntries: number,
+    bookId: number,
+    selectedQuizType: string
+  ): Observable<string> {
+    const body = {
+      message: '',
+      page: 'quiz',
+      number_of_entries: numberOfEntries,
+      level: cefr,
+      difficulty: difficulty,
+      book_id: bookId,
+      quiz_type: selectedQuizType,
+    } as AskRequest;
+    return this._httpClient
+      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .pipe(map((response) => response.response));
+  }
 }

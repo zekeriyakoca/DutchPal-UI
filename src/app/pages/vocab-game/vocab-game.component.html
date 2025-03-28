@@ -1,0 +1,81 @@
+<div class="bg-white">
+  <div class="relative isolate px-6 pt-14 lg:px-8">
+
+    <!-- Centered Content -->
+    <div class="mx-auto max-w-2xl pt-4 pt-8 text-center min-w-[70%] w-full">
+      <div class="flex justify-center items-center gap-4">
+        <div class="text-left flex-1">
+          <label for="CEFR" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a
+            level</label>
+          <select id="CEFR" [(ngModel)]="selectedLevel" name="CEFR"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <option value="ALL LEVELS" selected>ALL LEVELS</option>
+            @for (item of ['A1','A2','B1','B2','C1','C2']; track $index) {
+            <option [value]="item">{{item}}</option>
+            }
+          </select>
+        </div>
+        <div class="text-left flex-1">
+          <label for="book" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a
+            book</label>
+          <select id="book" [(ngModel)]="selectedBook" name="book"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <option [value]="0" selected>ALL BOOKS</option>
+            @for (item of [{name:'Book1', id: '1'},{name:'Book2', id: '2'}]; track $index) {
+            <option [value]="item.id">{{item.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="text-left flex-1">
+          <label for="wordType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Word type</label>
+          <select id="wordType" [(ngModel)]="selectedWordType" name="wordType"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            @for (item of ['ALL TYPES', 'NOUN', 'VERB', 'ADJECTIVE', 'ADVERB']; track $index) {
+            <option [value]="item">{{item}}</option>
+            }
+          </select>
+        </div>
+        <div class="text-left flex-1">
+          <label for="question" class="block mb-2 text-sm font-medium text-left text-gray-900">Item Count</label>
+          <input id="question" type="number" [(ngModel)]="itemCount"
+            class="w-full px-4 py-2 text-sm rounded-md border bg-gray-50 placeholder-gray-400 text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            style="border-color: rgba(55, 48, 163, 0.19);" />
+        </div>
+        <div class="text-left flex-1">
+          <label for="question" class="block mb-2 text-sm font-medium text-left text-gray-900">Game Type</label>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" [(ngModel)]="isSentenceGame">
+            <div
+              class="relative w-11 h-6 bg-pink-700 peer-checked:bg-indigo-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+            </div>
+            @if(isSentenceGame){
+            <span class="ms-3 text-md font-normal text-indigo-700 mr-3">SENTENCE</span>
+            }
+            @else{
+            <span class="ms-3 text-md font-normal text-pink-700">WORD</span>
+            }
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Input Section (static for now) -->
+      <div class="mt-10">
+        <button class="mt-4 px-5 py-2 bg-indigo-600 text-white font-normal rounded-lg hover:bg-indigo-700 transition"
+          (click)="translate()">
+          Bring New {{isSentenceGame ? 'Sentences' : 'Words'}}
+        </button>
+      </div>
+    </div>
+    <div class="py-8 px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl flex justify-center">
+        <div class="bg-white border-0 rounded-2xl p-6 w-full text-center"
+          style="border-color: rgba(55, 48, 163, 0.19);">
+          <article class="prose max-w-none">
+            <markdown [data]="response()"></markdown>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
