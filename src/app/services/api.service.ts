@@ -2,8 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AskResponse } from '../models/askResponse';
-import { AskRequest } from '../models/askRequest';
+import { ApiResponse } from '../models/apiResponse';
+import {
+  ChatRequest,
+  VocabRequest,
+  TranslateRequest,
+  SentencesRequest,
+  QuizRequest,
+} from '../models/apiRequestModels';
 
 @Injectable({
   providedIn: 'root',
@@ -12,50 +18,46 @@ export class ApiService {
   constructor(private _httpClient: HttpClient) {}
 
   ask(prompt: string): Observable<string> {
+    const body: ChatRequest = { message: prompt };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, {
-        message: prompt,
-        page: 'chat',
-      })
+      .post<ApiResponse>(`${environment.apiUrl}/chat`, body)
       .pipe(map((response) => response.response));
   }
 
   translateWord(word: string): Observable<string> {
-    const body = {
+    const body: VocabRequest = {
       message: word,
-      page: 'vocab',
       number_of_entries: 1,
-    } as AskRequest;
+    };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .post<ApiResponse>(`${environment.apiUrl}/vocabulary`, body)
       .pipe(map((response) => response.response));
   }
 
   translateText(text: string): Observable<string> {
-    const body = {
+    const body: TranslateRequest = {
       message: text,
-      page: 'translate-sentence',
-      number_of_entries: 1,
-    } as AskRequest;
+    };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .post<ApiResponse>(`${environment.apiUrl}/translate`, body)
       .pipe(map((response) => response.response));
   }
 
   getVocabulary(
     level: string,
     numberOfEntries: number,
-    bookId: number
+    bookId: number,
+    wordType: string
   ): Observable<string> {
-    const body = {
+    const body: VocabRequest = {
       message: '',
-      page: 'vocab',
-      number_of_entries: numberOfEntries,
       level,
+      number_of_entries: numberOfEntries,
       book_id: bookId,
-    } as AskRequest;
+      word_type: wordType,
+    };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .post<ApiResponse>(`${environment.apiUrl}/vocabulary`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -64,15 +66,13 @@ export class ApiService {
     numberOfEntries: number,
     bookId: number
   ): Observable<string> {
-    const body = {
-      message: '',
-      page: 'sentences',
-      number_of_entries: numberOfEntries,
+    const body: SentencesRequest = {
       level,
+      number_of_entries: numberOfEntries,
       book_id: bookId,
-    } as AskRequest;
+    };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .post<ApiResponse>(`${environment.apiUrl}/sentences`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -81,19 +81,18 @@ export class ApiService {
     difficulty: number,
     numberOfEntries: number,
     bookId: number,
-    selectedQuizType: string
+    selectedQuizType: QuizRequest['quiz_type']
   ): Observable<string> {
-    const body = {
+    const body: QuizRequest = {
       message: '',
-      page: 'quiz',
-      number_of_entries: numberOfEntries,
       level: cefr,
-      difficulty: difficulty,
+      difficulty,
+      number_of_entries: numberOfEntries,
       book_id: bookId,
       quiz_type: selectedQuizType,
-    } as AskRequest;
+    };
     return this._httpClient
-      .post<AskResponse>(`${environment.apiUrl}/ask`, body)
+      .post<ApiResponse>(`${environment.apiUrl}/quiz`, body)
       .pipe(map((response) => response.response));
   }
 }

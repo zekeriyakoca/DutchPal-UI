@@ -33,7 +33,12 @@ export class VocabGameComponent {
         });
     } else {
       this.apiService
-        .getVocabulary(this.selectedLevel, this.itemCount, this.selectedBook)
+        .getVocabulary(
+          this.selectedLevel,
+          this.itemCount,
+          this.selectedBook,
+          this.selectedWordType
+        )
         .pipe(first())
         .subscribe((response) => {
           this.response.set(response);

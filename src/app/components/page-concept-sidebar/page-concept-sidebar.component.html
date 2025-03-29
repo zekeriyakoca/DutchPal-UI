@@ -1,0 +1,17 @@
+<div class="absolute w-full h-64 bg-primary-900"></div>
+<div class="bg-white">
+  <div class="relative isolate px-6 pt-14 lg:px-8 flex items-start">
+    <!-- Centered Content -->
+    <div class="pt-4 pt-8 flex-2 bg-white px-12 py-12 rounded-lg shadow-lg text-white">
+      <ng-content select="sidebar-menu"></ng-content>
+    </div>
+    <div
+      class="py-8 px-4 sm:px-6 lg:px-8 flex-1 bg-white px-12 py-12 rounded-lg shadow-lg text-white ml-12 min-h-[80vh]">
+      <div class="mx-auto max-w-7xl flex justify-center">
+        <div class="bg-white border-0 rounded-2xl p-6 w-full text-left" style="border-color: rgba(55, 48, 163, 0.19);">
+          <ng-content select="master-content"></ng-content>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,7 +5,7 @@
     <div class="mx-auto max-w-2xl pt-4 pt-8 text-center min-w-[70%] w-full">
       <div class="flex justify-center items-center gap-4">
         <div class="text-left flex-1">
-          <label for="CEFR" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a
+          <label for="CEFR" class="block mb-2 text-sm font-medium text-gray-900  ">Select a
             level</label>
           <select id="CEFR" [(ngModel)]="selectedLevel" name="CEFR"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -16,7 +16,7 @@
           </select>
         </div>
         <div class="text-left flex-1">
-          <label for="book" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a
+          <label for="book" class="block mb-2 text-sm font-medium text-gray-900  ">Select a
             book</label>
           <select id="book" [(ngModel)]="selectedBook" name="book"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -26,8 +26,9 @@
             }
           </select>
         </div>
+        @if(!isSentenceGame){
         <div class="text-left flex-1">
-          <label for="wordType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Word type</label>
+          <label for="wordType" class="block mb-2 text-sm font-medium text-gray-900  ">Word type</label>
           <select id="wordType" [(ngModel)]="selectedWordType" name="wordType"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
             @for (item of ['ALL TYPES', 'NOUN', 'VERB', 'ADJECTIVE', 'ADVERB']; track $index) {
@@ -35,6 +36,7 @@
             }
           </select>
         </div>
+        }
         <div class="text-left flex-1">
           <label for="question" class="block mb-2 text-sm font-medium text-left text-gray-900">Item Count</label>
           <input id="question" type="number" [(ngModel)]="itemCount"

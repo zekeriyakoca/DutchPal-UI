@@ -3,7 +3,6 @@
 @tailwind utilities;
 @plugin "@tailwindcss/typography";
 
-/* Your custom SCSS styles can go below */
 body {
-  font-family: sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
