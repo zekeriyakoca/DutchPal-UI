@@ -7,6 +7,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
+import { Options } from '../../models/bootstrap';
 
 @Component({
   selector: 'app-vocab-game',
@@ -32,8 +33,13 @@ export class VocabGameComponent {
     'VERB';
   itemCount = 5;
   isLoading = signal(false);
+  bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) {
+    this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
+      this.bookOptions.set( data.book_options);
+    });
+  }
 
   translate() {
     this.isLoading.set(true);

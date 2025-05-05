@@ -28,7 +28,7 @@
         <select id="book" [(ngModel)]="selectedBook" name="book"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
           <option [value]="0" selected>ALL BOOKS</option>
-          @for (item of [{name:'Book1', id: '1'},{name:'Book2', id: '2'}]; track $index) {
+          @for (item of bookOptions(); track $index) {
           <option [value]="item.id">{{item.name}}</option>
           }
         </select>

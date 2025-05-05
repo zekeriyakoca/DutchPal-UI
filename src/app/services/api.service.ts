@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../models/apiResponse';
 import {
@@ -10,12 +10,21 @@ import {
   SentencesRequest,
   QuizRequest,
 } from '../models/apiRequestModels';
+import { BootstrapData } from '../models/bootstrap';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   constructor(private _httpClient: HttpClient) {}
+
+  getBootstrapData(): Observable<BootstrapData> {
+    return this._httpClient
+      .get<BootstrapData>(`${environment.apiUrl}/bootstrap`)
+      .pipe(
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
+  }
 
   ask(prompt: string): Observable<string> {
     const body: ChatRequest = { message: prompt };
