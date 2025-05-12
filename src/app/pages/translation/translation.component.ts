@@ -15,7 +15,7 @@ import { first } from 'rxjs';
 export class TranslationComponent {
   prompt = '';
   isTextTranslation = false;
-  response = signal('');
+  response = signal("");
 
   constructor(private apiService: ApiService) {}
 
