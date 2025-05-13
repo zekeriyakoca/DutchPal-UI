@@ -8,6 +8,7 @@ import { PageConceptSidebarComponent } from '../../components/page-concept-sideb
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Options } from '../../models/bootstrap';
+import { UserPreferencesService } from '../../services/user-preferences.service';
 
 @Component({
   selector: 'app-quiz',
@@ -35,7 +36,8 @@ export class QuizComponent {
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService) {
+    this.retrieveUserPreferences();
     this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
       this.bookOptions.set( data.book_options);
     });
@@ -43,6 +45,7 @@ export class QuizComponent {
 
   translate() {
     this.isLoading.set(true);
+    this.setUserPreferences();
     this.apiService
       .generateQuiz(
         this.selectedLevel,
@@ -63,5 +66,19 @@ export class QuizComponent {
           this.isLoading.set(false);
         },
       });
+  }
+  retrieveUserPreferences() {
+    this.selectedLevel = this.userPreferences.get('quiz.level', 'ALL LEVELS');
+    this.selectedDifficultyLevel = this.userPreferences.get('quiz.difficulty', 5);
+    this.selectedBook = this.userPreferences.get('quiz.book', 0);
+    this.selectedQuizType = this.userPreferences.get('quiz.quizType', 'MIXED');
+    this.itemCount = this.userPreferences.get('quiz.itemCount', 5);
+  }
+  setUserPreferences() {
+    this.userPreferences.set('quiz.level', this.selectedLevel);
+    this.userPreferences.set('quiz.difficulty', this.selectedDifficultyLevel);
+    this.userPreferences.set('quiz.book', this.selectedBook);
+    this.userPreferences.set('quiz.quizType', this.selectedQuizType);
+    this.userPreferences.set('quiz.itemCount', this.itemCount);
   }
 }

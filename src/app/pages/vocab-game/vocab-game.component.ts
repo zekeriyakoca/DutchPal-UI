@@ -8,6 +8,7 @@ import { PageConceptSidebarComponent } from '../../components/page-concept-sideb
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Options } from '../../models/bootstrap';
+import { UserPreferencesService } from '../../services/user-preferences.service';
 
 @Component({
   selector: 'app-vocab-game',
@@ -35,7 +36,9 @@ export class VocabGameComponent {
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService) {
+    this.retrieveUserPreferences();
+
     this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
       this.bookOptions.set( data.book_options);
     });
@@ -43,6 +46,7 @@ export class VocabGameComponent {
 
   translate() {
     this.isLoading.set(true);
+    this.setUserPreferences();
 
     if (this.isSentenceGame) {
       this.apiService
@@ -80,5 +84,22 @@ export class VocabGameComponent {
           },
         });
     }
+  }
+
+
+  private retrieveUserPreferences() {
+    this.isSentenceGame = this.userPreferences.get('vocab-game.isSentenceGame', false);
+    this.selectedLevel = this.userPreferences.get('vocab-game.selectedLevel', 'ALL LEVELS');
+    this.selectedBook = this.userPreferences.get('vocab-game.selectedBook', 0);
+    this.selectedWordType = this.userPreferences.get('vocab-game.selectedWordType', 'VERB');
+    this.itemCount = this.userPreferences.get('vocab-game.itemCount', 5);
+  }
+
+  private setUserPreferences() {
+    this.userPreferences.set('vocab-game.isSentenceGame', this.isSentenceGame);
+    this.userPreferences.set('vocab-game.selectedLevel', this.selectedLevel);
+    this.userPreferences.set('vocab-game.selectedBook', this.selectedBook);
+    this.userPreferences.set('vocab-game.selectedWordType', this.selectedWordType);
+    this.userPreferences.set('vocab-game.itemCount', this.itemCount);
   }
 }
