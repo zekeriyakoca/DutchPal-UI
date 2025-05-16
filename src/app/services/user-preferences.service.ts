@@ -7,7 +7,7 @@ type PreferenceMap = {
   'vocab-game.isSentenceGame': boolean;
   'vocab-game.selectedLevel': string;
   'vocab-game.selectedBook': number;
-  'vocab-game.selectedWordType': 'ALL TYPES' | 'NOUN' | 'VERB' | 'ADJECTIVE' | 'ADVERB';
+  'vocab-game.selectedWordType': string;
   'vocab-game.itemCount': number;
   'quiz.level': string;
   'quiz.difficulty': number;

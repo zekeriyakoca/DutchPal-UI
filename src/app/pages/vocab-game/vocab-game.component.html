@@ -5,6 +5,7 @@
         <label for="CEFR" class="block mb-1 text-sm font-normal text-gray-900  ">Select a
           level</label>
         <select id="CEFR" [(ngModel)]="selectedLevel" name="CEFR"
+          [disabled]="selectedWordType() == 'ADV' || selectedWordType() == 'ADJ'"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
           <option value="ALL LEVELS" selected>ALL LEVELS</option>
           @for (item of ['A1','A2','B1','B2','C1','C2']; track $index) {
@@ -28,7 +29,7 @@
         <label for="wordType" class="block mb-1 text-sm font-normal text-gray-900  ">Word type</label>
         <select id="wordType" [(ngModel)]="selectedWordType" name="wordType"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          @for (item of ['ALL TYPES', 'NOUN', 'VERB', 'ADJECTIVE', 'ADVERB']; track $index) {
+          @for (item of ['ALL TYPES', 'NOUN', 'VERB', 'ADJ', 'ADV']; track $index) {
           <option [value]="item">{{item}}</option>
           }
         </select>

@@ -30,8 +30,7 @@ export class VocabGameComponent {
   response = signal('');
   selectedLevel = 'ALL LEVELS';
   selectedBook = 0;
-  selectedWordType: 'ALL TYPES' | 'NOUN' | 'VERB' | 'ADJECTIVE' | 'ADVERB' =
-    'VERB';
+  selectedWordType = signal('VERB');
   itemCount = 5;
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
@@ -69,7 +68,7 @@ export class VocabGameComponent {
           this.selectedLevel,
           this.itemCount,
           this.selectedBook,
-          this.selectedWordType
+          this.selectedWordType()
         )
         .pipe(first())
         .subscribe({
@@ -91,7 +90,7 @@ export class VocabGameComponent {
     this.isSentenceGame = this.userPreferences.get('vocab-game.isSentenceGame', false);
     this.selectedLevel = this.userPreferences.get('vocab-game.selectedLevel', 'ALL LEVELS');
     this.selectedBook = this.userPreferences.get('vocab-game.selectedBook', 0);
-    this.selectedWordType = this.userPreferences.get('vocab-game.selectedWordType', 'VERB');
+    this.selectedWordType.set(this.userPreferences.get('vocab-game.selectedWordType', 'VERB'));
     this.itemCount = this.userPreferences.get('vocab-game.itemCount', 5);
   }
 
@@ -99,7 +98,7 @@ export class VocabGameComponent {
     this.userPreferences.set('vocab-game.isSentenceGame', this.isSentenceGame);
     this.userPreferences.set('vocab-game.selectedLevel', this.selectedLevel);
     this.userPreferences.set('vocab-game.selectedBook', this.selectedBook);
-    this.userPreferences.set('vocab-game.selectedWordType', this.selectedWordType);
+    this.userPreferences.set('vocab-game.selectedWordType', this.selectedWordType());
     this.userPreferences.set('vocab-game.itemCount', this.itemCount);
   }
 }
