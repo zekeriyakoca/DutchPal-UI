@@ -1,0 +1,48 @@
+.modal-container{
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  transform: translateX(150px);
+  position: fixed;
+  right: 20px;
+  top: 90px;
+  min-width: 350px;
+  margin: auto;
+  box-shadow: 0px 0px 8px 1px rgb(0 0 0 / 8%);
+  border-radius: 10px;
+  padding: 10px;
+  background-color: white;
+
+  .modal-title{
+    text-align: left;
+    padding-left: 10px;
+    color: #c31111;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+  .modal-text{
+    text-align: left;
+    padding: 8px;
+    font-size: 14px;
+    color: #7d051a;
+  }
+
+  &.warning{
+    .modal-title{
+      color: #d9b200;
+    }
+    .modal-text{
+      color: #6b6200;
+    }
+  }
+
+  &.inVisible{
+    opacity: 0;
+    transform: translateX(150px);
+  }
+  &.visible{
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+

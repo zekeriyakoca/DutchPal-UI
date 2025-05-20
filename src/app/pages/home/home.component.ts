@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { first } from 'rxjs';
 import { MarkdownModule } from 'ngx-markdown';
+import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, MarkdownModule],
+  imports: [CommonModule, FormsModule, MarkdownModule, ShowSelectionOptionsDirective],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

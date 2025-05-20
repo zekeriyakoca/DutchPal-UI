@@ -7,6 +7,7 @@
   <!-- Right Content -->
   <div class="flex flex-col w-full mt-16">
     <router-outlet class="flex"></router-outlet>
+    <app-toast [data]="toast$ | async"></app-toast>
   </div>
 </div>
 

@@ -1,3 +1,4 @@
+import { ToastService } from './../../services/toast.service';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { first } from 'rxjs';
@@ -35,7 +36,7 @@ export class VocabGameComponent {
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService) {
+  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService, private toastService : ToastService) {
     this.retrieveUserPreferences();
 
     this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
