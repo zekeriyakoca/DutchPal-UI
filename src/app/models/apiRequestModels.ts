@@ -17,6 +17,11 @@ export interface TranslateRequest {
   message: string;
 }
 
+// Used by /translate-word
+export interface TranslateWordSimpleRequest {
+  message: string;
+}
+
 // Used by /sentences
 export interface SentencesRequest {
   level?: string;

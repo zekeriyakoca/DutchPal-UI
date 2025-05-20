@@ -10,6 +10,7 @@ import { DisabledUntilDirective } from '../../directives/disable-until.directive
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Options } from '../../models/bootstrap';
 import { UserPreferencesService } from '../../services/user-preferences.service';
+import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
 @Component({
   selector: 'app-vocab-game',
@@ -21,6 +22,7 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
     PageConceptSidebarComponent,
     DisabledUntilDirective,
     SpinUntilDirective,
+    ShowSelectionOptionsDirective,
   ],
   templateUrl: './vocab-game.component.html',
   styleUrl: './vocab-game.component.scss',
@@ -36,12 +38,19 @@ export class VocabGameComponent {
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService, private toastService : ToastService) {
+  constructor(
+    private apiService: ApiService,
+    private userPreferences: UserPreferencesService,
+    private toastService: ToastService
+  ) {
     this.retrieveUserPreferences();
 
-    this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
-      this.bookOptions.set( data.book_options);
-    });
+    this.apiService
+      .getBootstrapData()
+      .pipe(first())
+      .subscribe((data) => {
+        this.bookOptions.set(data.book_options);
+      });
   }
 
   translate() {
@@ -86,12 +95,19 @@ export class VocabGameComponent {
     }
   }
 
-
   private retrieveUserPreferences() {
-    this.isSentenceGame = this.userPreferences.get('vocab-game.isSentenceGame', false);
-    this.selectedLevel = this.userPreferences.get('vocab-game.selectedLevel', 'ALL LEVELS');
+    this.isSentenceGame = this.userPreferences.get(
+      'vocab-game.isSentenceGame',
+      false
+    );
+    this.selectedLevel = this.userPreferences.get(
+      'vocab-game.selectedLevel',
+      'ALL LEVELS'
+    );
     this.selectedBook = this.userPreferences.get('vocab-game.selectedBook', 0);
-    this.selectedWordType.set(this.userPreferences.get('vocab-game.selectedWordType', 'VERB'));
+    this.selectedWordType.set(
+      this.userPreferences.get('vocab-game.selectedWordType', 'VERB')
+    );
     this.itemCount = this.userPreferences.get('vocab-game.itemCount', 5);
   }
 
@@ -99,7 +115,10 @@ export class VocabGameComponent {
     this.userPreferences.set('vocab-game.isSentenceGame', this.isSentenceGame);
     this.userPreferences.set('vocab-game.selectedLevel', this.selectedLevel);
     this.userPreferences.set('vocab-game.selectedBook', this.selectedBook);
-    this.userPreferences.set('vocab-game.selectedWordType', this.selectedWordType());
+    this.userPreferences.set(
+      'vocab-game.selectedWordType',
+      this.selectedWordType()
+    );
     this.userPreferences.set('vocab-game.itemCount', this.itemCount);
   }
 }

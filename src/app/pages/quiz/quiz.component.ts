@@ -36,11 +36,17 @@ export class QuizComponent {
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);
 
-  constructor(private apiService: ApiService, private userPreferences: UserPreferencesService) {
+  constructor(
+    private apiService: ApiService,
+    private userPreferences: UserPreferencesService
+  ) {
     this.retrieveUserPreferences();
-    this.apiService.getBootstrapData().pipe(first()).subscribe((data)=>{
-      this.bookOptions.set( data.book_options);
-    });
+    this.apiService
+      .getBootstrapData()
+      .pipe(first())
+      .subscribe((data) => {
+        this.bookOptions.set(data.book_options);
+      });
   }
 
   translate() {
@@ -69,7 +75,10 @@ export class QuizComponent {
   }
   retrieveUserPreferences() {
     this.selectedLevel = this.userPreferences.get('quiz.level', 'ALL LEVELS');
-    this.selectedDifficultyLevel = this.userPreferences.get('quiz.difficulty', 5);
+    this.selectedDifficultyLevel = this.userPreferences.get(
+      'quiz.difficulty',
+      5
+    );
     this.selectedBook = this.userPreferences.get('quiz.book', 0);
     this.selectedQuizType = this.userPreferences.get('quiz.quizType', 'MIXED');
     this.itemCount = this.userPreferences.get('quiz.itemCount', 5);

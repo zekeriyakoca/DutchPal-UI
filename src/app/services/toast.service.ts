@@ -3,11 +3,11 @@ import { BehaviorSubject } from 'rxjs';
 import { ToastDto } from '../models/toastDto';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ToastService {
-
   public toast$ = new BehaviorSubject<ToastDto | undefined>(undefined);
+  public permanentToast$ = new BehaviorSubject<ToastDto | undefined>(undefined);
 
   constructor() {}
 
@@ -18,5 +18,9 @@ export class ToastService {
   // TODO : Implement warning later.
   public addWarning(message: string) {
     this.toast$.next({ message: message, type: 'warning' });
+  }
+
+  public addPermanentToast(message: string) {
+    this.permanentToast$.next({ message: message, type: 'success' });
   }
 }

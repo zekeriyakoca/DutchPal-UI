@@ -9,6 +9,7 @@ import {
   TranslateRequest,
   SentencesRequest,
   QuizRequest,
+  TranslateWordSimpleRequest,
 } from '../models/apiRequestModels';
 import { BootstrapData } from '../models/bootstrap';
 
@@ -40,6 +41,15 @@ export class ApiService {
     };
     return this._httpClient
       .post<ApiResponse>(`${environment.apiUrl}/vocabulary`, body)
+      .pipe(map((response) => response.response));
+  }
+
+  translateWordSimple(word: string): Observable<string> {
+    const body: TranslateWordSimpleRequest = {
+      message: word,
+    };
+    return this._httpClient
+      .post<ApiResponse>(`${environment.apiUrl}/translate-word`, body)
       .pipe(map((response) => response.response));
   }
 

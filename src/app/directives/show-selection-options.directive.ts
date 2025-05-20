@@ -48,13 +48,34 @@ export class ShowSelectionOptionsDirective {
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
-    this.showComponent({
-      top: rect.top + window.scrollY - 30,
-      left: rect.right + window.scrollX,
-    }, text);
+    this.showComponent(
+      {
+        top: rect.top + window.scrollY - 30,
+        left: rect.right + window.scrollX,
+      },
+      text
+    );
   }
 
-  private showComponent(position: { top: number, left: number }, selectedText: string) {
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent) {
+    const target = event.target as Node;
+
+    const clickedInsideHost = this.el.nativeElement.contains(target);
+    const clickedInsideComponent =
+      this.componentRef?.location.nativeElement.contains(target);
+
+    if (clickedInsideHost || clickedInsideComponent) {
+      return; // Clicked inside, do nothing
+    }
+
+    this.destroyComponent(); // Clicked outside, destroy
+  }
+
+  private showComponent(
+    position: { top: number; left: number },
+    selectedText: string
+  ) {
     if (this.componentRef) {
       this.componentRef.instance.position = position;
       this.componentRef.instance.visible = true;
@@ -62,17 +83,19 @@ export class ShowSelectionOptionsDirective {
       return;
     }
 
-    const factory = this.componentFactoryResolver.resolveComponentFactory(SelectionOptionsComponent);
+    const factory = this.componentFactoryResolver.resolveComponentFactory(
+      SelectionOptionsComponent
+    );
     this.componentRef = factory.create(this.injector);
     this.componentRef.instance.position = position;
     this.componentRef.instance.visible = true;
     this.componentRef.instance.selectedText.set(selectedText);
 
     this.appRef.attachView(this.componentRef.hostView);
-    const domElem = (this.componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
+    const domElem = (this.componentRef.hostView as EmbeddedViewRef<any>)
+      .rootNodes[0] as HTMLElement;
     document.body.appendChild(domElem);
   }
-
 
   private destroyComponent() {
     if (this.componentRef) {
