@@ -6,7 +6,7 @@ import {
   input,
   SimpleChanges,
 } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, delay } from 'rxjs';
 import { ToastDto } from '../../models/toastDto';
 import { CommonModule } from '@angular/common';
 import { MarkdownModule } from 'ngx-markdown';
@@ -41,7 +41,7 @@ export class PermanentToastComponent {
 
     this.timer = setTimeout(() => {
       this.isVisible.next(false);
-    }, 30000);
+    }, 300000);
   }
 
   @HostListener('document:click', ['$event'])

@@ -36,5 +36,5 @@ export interface QuizRequest {
   difficulty?: number;
   number_of_entries?: number;
   book_id?: number;
-  quiz_type: 'MIXED' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
+  quiz_type: 'MIXED' | 'PARAGRAPH' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
 }

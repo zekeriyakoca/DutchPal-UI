@@ -9,6 +9,7 @@ import { DisabledUntilDirective } from '../../directives/disable-until.directive
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Options } from '../../models/bootstrap';
 import { UserPreferencesService } from '../../services/user-preferences.service';
+import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
 @Component({
   selector: 'app-quiz',
@@ -20,6 +21,7 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
     PageConceptSidebarComponent,
     DisabledUntilDirective,
     SpinUntilDirective,
+    ShowSelectionOptionsDirective,
   ],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.scss',
@@ -30,8 +32,12 @@ export class QuizComponent {
   selectedLevel = 'ALL LEVELS';
   selectedDifficultyLevel = 5;
   selectedBook = 0;
-  selectedQuizType: 'MIXED' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR' =
-    'MIXED';
+  selectedQuizType:
+    | 'MIXED'
+    | 'PARAGRAPH'
+    | 'VOCABULARY'
+    | 'TRANSLATION'
+    | 'GRAMMAR' = 'MIXED';
   itemCount = 5;
   isLoading = signal(false);
   bookOptions = signal<Options[]>([]);

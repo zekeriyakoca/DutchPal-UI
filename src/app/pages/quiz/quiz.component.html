@@ -16,6 +16,7 @@
         <label for="difficulty" class="block mb-1 text-sm font-normal text-gray-900 ">Select
           difficulty</label>
         <select id="difficulty" [(ngModel)]="selectedDifficultyLevel" name="difficulty"
+          [disabled]="selectedQuizType == 'PARAGRAPH'"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
           @for (item of [1,2,3,4,5,6,7,8,9,10]; track $index) {
           <option [value]="item">{{item}}</option>
@@ -25,7 +26,7 @@
       <div class="text-left flex-1">
         <label for="book" class="block mb-1 text-sm font-normal text-gray-900">Select a
           book</label>
-        <select id="book" [(ngModel)]="selectedBook" name="book"
+        <select id="book" [(ngModel)]="selectedBook" name="book" [disabled]="selectedQuizType == 'PARAGRAPH'"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
           <option [value]="0" selected>ALL BOOKS</option>
           @for (item of bookOptions(); track $index) {
@@ -37,7 +38,7 @@
         <label for="wordType" class="block mb-1 text-sm font-normal text-gray-900">Quiz type</label>
         <select id="wordType" [(ngModel)]="selectedQuizType" name="wordType"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          @for (item of ['MIXED', 'VOCABULARY', 'TRANSLATION', 'GRAMMAR']; track $index) {
+          @for (item of ['MIXED', 'PARAGRAPH', 'VOCABULARY', 'TRANSLATION', 'GRAMMAR']; track $index) {
           <option [value]="item">{{item}}</option>
           }
         </select>
