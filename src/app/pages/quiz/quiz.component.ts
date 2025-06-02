@@ -7,7 +7,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
-import { Options } from '../../models/bootstrap';
+import { Option } from '../../models/bootstrap';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
@@ -40,7 +40,7 @@ export class QuizComponent {
     | 'GRAMMAR' = 'MIXED';
   itemCount = 5;
   isLoading = signal(false);
-  bookOptions = signal<Options[]>([]);
+  bookOptions = signal<Option[]>([]);
 
   constructor(
     private apiService: ApiService,

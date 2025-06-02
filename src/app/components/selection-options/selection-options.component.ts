@@ -27,10 +27,32 @@ export class SelectionOptionsComponent {
   hide() {
     this.visible = false;
   }
-  explain() {
-    this.toastService.addWarning(
-      `Hang tight! This feature isn't ready yet — but you'll have a chatbot to talk to very soon!`
+
+  talkAbout() {
+    window.open(
+      'https://chat.openai.com/?q=' + encodeURIComponent(this.generatePrompt()),
+      '_blank'
     );
+  }
+
+  generatePrompt(): string {
+    const text = this.selectedText();
+    return `I'm learning Dutch. Please explain the general structure of this text along with the translation in English: "${text}". Only highlight noteworthy grammar or vocabulary — skip unnecessary details`;
+  }
+
+  explain() {
+    this.apiService
+      .explain(this.selectedText())
+      .pipe(first())
+      .subscribe({
+        next: (response) => {
+          this.toastService.addPermanentToast(response);
+        },
+        error: (error) => {
+          console.error('Unable to fetch explanation:', error);
+          this.toastService.addError('Unable to fetch explanation');
+        },
+      });
   }
 
   translate() {

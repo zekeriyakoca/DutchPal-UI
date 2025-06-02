@@ -1,0 +1,9 @@
+.menu{
+  transition: all 0.2s ease-in;
+  overflow: hidden;
+}
+.menu.menu-hidden {
+  width: 0px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

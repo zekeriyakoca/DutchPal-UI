@@ -11,7 +11,8 @@ import {
   QuizRequest,
   TranslateWordSimpleRequest,
 } from '../models/apiRequestModels';
-import { BootstrapData } from '../models/bootstrap';
+import { BootstrapData, Option } from '../models/bootstrap';
+import { SentenceDto, SectionDto } from '../models/sectionModels';
 
 @Injectable({
   providedIn: 'root',
@@ -59,6 +60,15 @@ export class ApiService {
     };
     return this._httpClient
       .post<ApiResponse>(`${environment.apiUrl}/translate`, body)
+      .pipe(map((response) => response.response));
+  }
+
+  explain(text: string): Observable<string> {
+    const body: TranslateRequest = {
+      message: text,
+    };
+    return this._httpClient
+      .post<ApiResponse>(`${environment.apiUrl}/explain`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -113,5 +123,26 @@ export class ApiService {
     return this._httpClient
       .post<ApiResponse>(`${environment.apiUrl}/quiz`, body)
       .pipe(map((response) => response.response));
+  }
+
+  getSectionNamesOfBook(bookId: number): Observable<Option[]> {
+    return this._httpClient
+      .get<Option[]>(`${environment.apiV2Url}/books/${bookId}/section-options`)
+      .pipe(
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
+  }
+
+  getSectionSectences(
+    bookId: number,
+    sectionId: number
+  ): Observable<SentenceDto[]> {
+    return this._httpClient
+      .get<SentenceDto[]>(
+        `${environment.apiV2Url}/books/${bookId}/sections/${sectionId}/sentences`
+      )
+      .pipe(
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
   }
 }

@@ -1,10 +1,32 @@
 <div class="absolute w-full h-64 bg-primary-900"></div>
 <div class="bg-white">
   <div class="relative isolate px-6 pt-14 lg:px-8 flex items-start">
-    <!-- Centered Content -->
-    <div class="pt-4 pt-8 flex-2 bg-white px-12 py-12 rounded-lg shadow-lg text-white">
-      <ng-content select="sidebar-menu"></ng-content>
+    <div>
+      <div class="menu-title text-white mb-4 items-right flex justify-end ">
+        <svg (click)="toggleMenu()" class="size-9 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+          @if (!isMenuOpen()) {
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+          } @else {
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+
+          }
+        </svg>
+
+
+
+      </div>
+      <!-- Centered Content -->
+      <div class="pt-4 pt-8 flex-2 bg-white px-12 py-12 rounded-lg shadow-lg"
+        [class]="isMenuOpen() ? 'menu' : 'menu menu-hidden'">
+        <div>
+          <ng-content select="sidebar-menu"></ng-content>
+        </div>
+      </div>
     </div>
+
     <div
       class="py-8 px-4 sm:px-6 lg:px-8 flex-1 bg-white px-12 py-12 rounded-lg shadow-lg text-white ml-12 min-h-[80vh]">
       <div class="mx-auto max-w-7xl flex justify-center">

@@ -11,7 +11,9 @@ type PreferenceKey =
   | 'quiz.difficulty'
   | 'quiz.book'
   | 'quiz.quizType'
-  | 'quiz.itemCount';
+  | 'quiz.itemCount'
+  | 'study-book.selectedBookId'
+  | 'study-book.selectedChapterId';
 
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
@@ -30,6 +32,8 @@ type PreferenceMap = {
     | 'TRANSLATION'
     | 'GRAMMAR';
   'quiz.itemCount': number;
+  'study-book.selectedBookId': number;
+  'study-book.selectedChapterId': number;
 };
 
 @Injectable({
