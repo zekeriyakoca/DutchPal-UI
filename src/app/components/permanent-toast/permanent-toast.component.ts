@@ -1,6 +1,5 @@
 import {
   Component,
-  computed,
   ElementRef,
   HostListener,
   input,

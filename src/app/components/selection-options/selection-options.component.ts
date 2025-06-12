@@ -1,7 +1,10 @@
-import { first } from 'rxjs';
+import { first, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from './../../services/toast.service';
 import { Component, input, signal } from '@angular/core';
+import { filter, switchMap } from 'rxjs/operators';
+import { WordTranslation } from '../../models/apiResponse';
+import { NotionNounDto, NotionVerbDto } from '../../models/notionModels';
 
 @Component({
   selector: 'app-selection-options',
@@ -70,5 +73,39 @@ export class SelectionOptionsComponent {
         this.toastService.addError('Unable to fetch translation');
       },
     });
+  }
+
+  addToNotion() {
+    this.apiService
+      .translateWordAsJson(this.selectedText())
+      .pipe(
+        first(),
+        switchMap((word: WordTranslation) => {
+          if (word.type === 'NOUN') {
+            return this.apiService.addNounToNotion({
+              name: word.word,
+              meaning: word.translation,
+              pronunciation: '',
+              sentence: word.examples.join('\n'),
+            } as NotionNounDto);
+          } else if (word.type === 'VERB') {
+            return this.apiService.addVerbToNotion({
+              name: word.word,
+              meaning: word.translation,
+              sentence: word.examples.join('\n'),
+            } as NotionVerbDto);
+          }
+          return of(undefined);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.addWarning('new word added to Notion');
+        },
+        error: (error) => {
+          console.error('Unable to ad word to Notion:', error);
+          this.toastService.addError('Unable to ad word to Notion');
+        },
+      });
   }
 }

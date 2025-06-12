@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ApiResponse } from '../models/apiResponse';
+import { ApiResponse, WordTranslation } from '../models/apiResponse';
 import {
   ChatRequest,
   VocabRequest,
@@ -13,6 +13,7 @@ import {
 } from '../models/apiRequestModels';
 import { BootstrapData, Option } from '../models/bootstrap';
 import { SentenceDto, SectionDto } from '../models/sectionModels';
+import { NotionVerbDto, NotionNounDto } from '../models/notionModels';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +32,7 @@ export class ApiService {
   ask(prompt: string): Observable<string> {
     const body: ChatRequest = { message: prompt };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/chat`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -41,7 +42,7 @@ export class ApiService {
       number_of_entries: 1,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/vocabulary`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/vocabulary`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -50,7 +51,19 @@ export class ApiService {
       message: word,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/translate-word`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/translate-word`, body)
+      .pipe(map((response) => response.response));
+  }
+
+  translateWordAsJson(word: string): Observable<WordTranslation> {
+    const body: TranslateWordSimpleRequest = {
+      message: word,
+    };
+    return this._httpClient
+      .post<ApiResponse<WordTranslation>>(
+        `${environment.apiUrl}/translate-word-as-json`,
+        body
+      )
       .pipe(map((response) => response.response));
   }
 
@@ -59,7 +72,7 @@ export class ApiService {
       message: text,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/translate`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/translate`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -68,7 +81,7 @@ export class ApiService {
       message: text,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/explain`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/explain`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -86,7 +99,7 @@ export class ApiService {
       word_type: wordType,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/vocabulary`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/vocabulary`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -101,7 +114,7 @@ export class ApiService {
       book_id: bookId,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/sentences`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/sentences`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -121,7 +134,7 @@ export class ApiService {
       quiz_type: selectedQuizType,
     };
     return this._httpClient
-      .post<ApiResponse>(`${environment.apiUrl}/quiz`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/quiz`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -140,6 +153,28 @@ export class ApiService {
     return this._httpClient
       .get<SentenceDto[]>(
         `${environment.apiV2Url}/books/${bookId}/sections/${sectionId}/sentences`
+      )
+      .pipe(
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
+  }
+
+  addNounToNotion(body: NotionNounDto): Observable<object> {
+    return this._httpClient
+      .post<object>(
+        `${environment.apiV2Url}/vocabulary/noun/upsert-to-notion`,
+        body
+      )
+      .pipe(
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
+  }
+
+  addVerbToNotion(body: NotionVerbDto): Observable<object> {
+    return this._httpClient
+      .post<object>(
+        `${environment.apiV2Url}/vocabulary/verb/upsert-to-notion`,
+        body
       )
       .pipe(
         shareReplay(1) // Cache the value and share it with all subscribers
