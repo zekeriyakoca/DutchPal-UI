@@ -1,7 +1,7 @@
 import { first, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from './../../services/toast.service';
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, computed } from '@angular/core';
 import { filter, switchMap } from 'rxjs/operators';
 import { WordTranslation } from '../../models/apiResponse';
 import { NotionNounDto, NotionVerbDto } from '../../models/notionModels';
@@ -30,6 +30,12 @@ export class SelectionOptionsComponent {
   hide() {
     this.visible = false;
   }
+
+  // computed
+  isSelectionWord: ReturnType<typeof computed> = computed(() => {
+    const text = this.selectedText();
+    return text.length > 0 && text.split(' ').length <= 1;
+  });
 
   talkAbout() {
     window.open(
@@ -81,7 +87,11 @@ export class SelectionOptionsComponent {
       .pipe(
         first(),
         switchMap((word: WordTranslation) => {
-          if (word.type === 'NOUN') {
+          if (
+            word.type === 'NOUN' ||
+            word.type === 'ADJECTIVE' ||
+            word.type === 'ADVERB'
+          ) {
             return this.apiService.addNounToNotion({
               name: word.word,
               meaning: word.translation,
