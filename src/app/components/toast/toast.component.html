@@ -1,6 +1,6 @@
 @if (data()) {
 <div
-  class="modal-container {{data()!.type == 'error' ? 'error' : 'warning'}} {{(isVisible | async) ? 'visible' : 'inVisible'}}">
+  class="modal-container {{data()!.type == 'error' ? 'error' :  data()!.type == 'warning' ? 'warning' : 'success'}} {{(isVisible | async) ? 'visible' : 'inVisible'}}">
   <div style="position: relative">
     <h4 class="modal-title">{{ title() }}</h4>
     <p class="modal-text">{{ data()!.message }}</p>

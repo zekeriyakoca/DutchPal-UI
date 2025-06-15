@@ -24,11 +24,26 @@
         </select>
       </div>
       }
+      <div class="text-left flex-1">
+        <label for="question" class="block mb-1 text-sm font-normal text-left text-gray-900">Game Type</label>
+        <label class="inline-flex items-left cursor-pointer">
+          <input type="checkbox" class="sr-only peer" [(ngModel)]="isBringSentences">
+          <div
+            class="relative w-11 h-6 bg-pink-700 peer-checked:bg-indigo-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+          </div>
+          @if(isBringSentences){
+          <span class="ms-3 text-md font-normal text-indigo-700 mr-3">Fetch Sentences</span>
+          }
+          @else{
+          <span class="ms-3 text-md font-normal text-pink-700">Fetch Whole Section</span>
+          }
+        </label>
+      </div>
       <!-- Input Section (static for now) -->
       <div class="flex-1">
         <button [appDisabledUntil]="isLoading()"
           class="mt-2 px-5 py-2 bg-indigo-600 text-white font-normal rounded-lg hover:bg-indigo-700 transition"
-          (click)="fetchSentences()">
+          (click)="fetchContent()">
           Bring Sentences
         </button>
       </div>

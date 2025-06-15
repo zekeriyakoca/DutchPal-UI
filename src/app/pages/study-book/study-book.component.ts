@@ -30,7 +30,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class StudyBookComponent {
-  isSentenceGame = false;
+  isBringSentences = false;
   response = signal('');
   selectedLevel = 'ALL LEVELS';
   selectedBook = 0;
@@ -91,23 +91,37 @@ export class StudyBookComponent {
       });
   }
 
-  fetchSentences() {
+  fetchContent() {
     if (+this.selectedChapter < 1) return;
 
     this.isLoading.set(true);
     this.setUserPreferences();
 
-    this.apiService
-      .getSectionSectences(this.selectedBook, +this.selectedChapter)
-      .pipe(first())
-      .subscribe((x) => {
-        this.isLoading.set(false);
-        var sentenceList = x.map((s) => s.text);
-        this.sentences.set(sentenceList);
-      });
+    if (this.isBringSentences) {
+      this.apiService
+        .getSectionSectences(this.selectedBook, +this.selectedChapter)
+        .pipe(first())
+        .subscribe((x) => {
+          this.isLoading.set(false);
+          var sentenceList = x.map((s) => s.text);
+          this.sentences.set(sentenceList);
+        });
+    } else {
+      this.apiService
+        .getSectionContent(this.selectedBook, +this.selectedChapter)
+        .pipe(first())
+        .subscribe((content) => {
+          this.isLoading.set(false);
+          this.response.set(content);
+        });
+    }
   }
 
   private retrieveUserPreferences() {
+    this.isBringSentences = this.userPreferences.get(
+      'study-book.isBringSentences',
+      false
+    );
     const bookId = this.userPreferences.get('study-book.selectedBookId', 0);
     const chapterId = this.userPreferences.get(
       'study-book.selectedChapterId',
@@ -125,6 +139,10 @@ export class StudyBookComponent {
   }
 
   private setUserPreferences() {
+    this.userPreferences.set(
+      'study-book.isBringSentences',
+      this.isBringSentences
+    );
     this.userPreferences.set('study-book.selectedBookId', this.selectedBook);
     this.userPreferences.set(
       'study-book.selectedChapterId',

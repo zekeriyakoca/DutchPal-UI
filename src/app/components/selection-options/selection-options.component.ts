@@ -34,7 +34,7 @@ export class SelectionOptionsComponent {
   // computed
   isSelectionWord: ReturnType<typeof computed> = computed(() => {
     const text = this.selectedText();
-    return text.length > 0 && text.split(' ').length <= 1;
+    return text.length > 0 && text.split(' ').length <= 2;
   });
 
   talkAbout() {
@@ -110,11 +110,16 @@ export class SelectionOptionsComponent {
       )
       .subscribe({
         next: () => {
-          this.toastService.addWarning('new word added to Notion');
+          this.toastService.addInfo(`'${this.selectedText()}' added to Notion`);
         },
         error: (error) => {
-          console.error('Unable to ad word to Notion:', error);
-          this.toastService.addError('Unable to ad word to Notion');
+          console.error(
+            `Unable to add '${this.selectedText()}' to Notion:`,
+            error
+          );
+          this.toastService.addError(
+            `Unable to add '${this.selectedText()}' to Notion`
+          );
         },
       });
   }

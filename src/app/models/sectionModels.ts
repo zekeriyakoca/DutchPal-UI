@@ -7,3 +7,7 @@ export interface SentenceDto {
   id: number;
   text: string;
 }
+
+export interface SectionContentDto {
+  content: string;
+}

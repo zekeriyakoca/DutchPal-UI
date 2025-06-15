@@ -12,7 +12,11 @@ import {
   TranslateWordSimpleRequest,
 } from '../models/apiRequestModels';
 import { BootstrapData, Option } from '../models/bootstrap';
-import { SentenceDto, SectionDto } from '../models/sectionModels';
+import {
+  SentenceDto,
+  SectionDto,
+  SectionContentDto,
+} from '../models/sectionModels';
 import { NotionVerbDto, NotionNounDto } from '../models/notionModels';
 
 @Injectable({
@@ -146,6 +150,16 @@ export class ApiService {
       );
   }
 
+  getSectionContent(bookId: number, sectionId: number): Observable<string> {
+    return this._httpClient
+      .get<SectionContentDto>(
+        `${environment.apiV2Url}/books/${bookId}/sections/${sectionId}`
+      )
+      .pipe(
+        map((response: SectionContentDto) => response.content),
+        shareReplay(1) // Cache the value and share it with all subscribers
+      );
+  }
   getSectionSectences(
     bookId: number,
     sectionId: number

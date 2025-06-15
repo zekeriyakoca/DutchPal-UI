@@ -13,7 +13,8 @@ type PreferenceKey =
   | 'quiz.quizType'
   | 'quiz.itemCount'
   | 'study-book.selectedBookId'
-  | 'study-book.selectedChapterId';
+  | 'study-book.selectedChapterId'
+  | 'study-book.isBringSentences';
 
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
@@ -34,6 +35,7 @@ type PreferenceMap = {
   'quiz.itemCount': number;
   'study-book.selectedBookId': number;
   'study-book.selectedChapterId': number;
+  'study-book.isBringSentences': boolean;
 };
 
 @Injectable({

@@ -15,9 +15,12 @@ export class ToastService {
     this.toast$.next({ message: message, type: 'error' });
   }
 
-  // TODO : Implement warning later.
   public addWarning(message: string) {
     this.toast$.next({ message: message, type: 'warning' });
+  }
+
+  public addInfo(message: string) {
+    this.toast$.next({ message: message, type: 'success' });
   }
 
   public addPermanentToast(message: string) {

@@ -36,6 +36,15 @@
     }
   }
 
+  &.success{
+    .modal-title{
+      color: #b7ade3;
+    }
+    .modal-text{
+      color: #002d6b;
+    }
+  }
+
   &.inVisible{
     opacity: 0;
     transform: translateX(150px);

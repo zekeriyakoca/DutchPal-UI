@@ -7,12 +7,16 @@ import { CommonModule } from '@angular/common';
   selector: 'app-toast',
   imports: [CommonModule],
   templateUrl: './toast.component.html',
-  styleUrl: './toast.component.scss'
+  styleUrl: './toast.component.scss',
 })
 export class ToastComponent {
   data = input<ToastDto | null>(null);
   title = computed(() => {
-    return this.data()?.type == 'error' ? 'Error happened!' : 'Warning!';
+    return this.data()?.type == 'error'
+      ? 'Error happened!'
+      : this.data()?.type == 'warning'
+      ? 'Warning!'
+      : 'Success!';
   });
 
   public isVisible = new BehaviorSubject<boolean>(false);
