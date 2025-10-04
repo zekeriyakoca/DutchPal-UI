@@ -173,25 +173,29 @@ export class ApiService {
       );
   }
 
-  addNounToNotion(body: NotionNounDto): Observable<object> {
+  addNounToNotion(body: NotionNounDto): Observable<boolean> {
     return this._httpClient
       .post<object>(
         `${environment.apiV2Url}/vocabulary/noun/upsert-to-notion`,
         body
       )
       .pipe(
-        shareReplay(1) // Cache the value and share it with all subscribers
+        map((data: any) => {
+          return data.count > 0;
+        })
       );
   }
 
-  addVerbToNotion(body: NotionVerbDto): Observable<object> {
+  addVerbToNotion(body: NotionVerbDto): Observable<boolean> {
     return this._httpClient
       .post<object>(
         `${environment.apiV2Url}/vocabulary/verb/upsert-to-notion`,
         body
       )
       .pipe(
-        shareReplay(1) // Cache the value and share it with all subscribers
+        map((data: any) => {
+          return data.count > 0;
+        })
       );
   }
 }

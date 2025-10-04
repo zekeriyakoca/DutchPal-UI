@@ -109,8 +109,16 @@ export class SelectionOptionsComponent {
         })
       )
       .subscribe({
-        next: () => {
-          this.toastService.addInfo(`'${this.selectedText()}' added to Notion`);
+        next: (isAdded) => {
+          if (isAdded) {
+            this.toastService.addInfo(
+              `'${this.selectedText()}' added to Notion`
+            );
+          } else {
+            this.toastService.addWarning(
+              `'${this.selectedText()}' already exists in Notion`
+            );
+          }
         },
         error: (error) => {
           console.error(
