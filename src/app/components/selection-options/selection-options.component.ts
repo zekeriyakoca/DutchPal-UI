@@ -90,7 +90,9 @@ export class SelectionOptionsComponent {
           if (
             word.type === 'NOUN' ||
             word.type === 'ADJECTIVE' ||
-            word.type === 'ADVERB'
+            word.type === 'ADVERB' ||
+            word.type === 'OTHER' ||
+            word.type !== 'VERB' // TODO : remove this line after we have a list of types
           ) {
             return this.apiService.addNounToNotion({
               name: word.word,
