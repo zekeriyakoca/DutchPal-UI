@@ -1,9 +1,10 @@
+# Legacy Netlify deployment. DutchPal now runs on k3s at dutchpal.lontray.art.
 [build]
   command = "npm run build"
   publish = "dist/dutch-pal-ui/browser"
-  functions = "dist/dutch-pal-ui/server"
 
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "https://dutchpal.lontray.art/:splat"
+  status = 301
+  force = true

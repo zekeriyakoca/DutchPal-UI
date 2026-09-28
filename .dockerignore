@@ -1,0 +1,11 @@
+.git
+.gitignore
+.DS_Store
+node_modules
+dist
+.angular
+coverage
+.vscode
+.idea
+npm-debug.log
+yarn-error.log

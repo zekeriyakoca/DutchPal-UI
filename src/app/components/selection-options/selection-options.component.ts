@@ -59,7 +59,6 @@ export class SelectionOptionsComponent {
         },
         error: (error) => {
           console.error('Unable to fetch explanation:', error);
-          this.toastService.addError('Unable to fetch explanation');
         },
       });
   }
@@ -76,7 +75,6 @@ export class SelectionOptionsComponent {
       },
       error: (error) => {
         console.error('Unable to fetch translation:', error);
-        this.toastService.addError('Unable to fetch translation');
       },
     });
   }
