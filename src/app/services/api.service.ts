@@ -18,6 +18,11 @@ import {
   SectionContentDto,
 } from '../models/sectionModels';
 import { NotionVerbDto, NotionNounDto } from '../models/notionModels';
+import {
+  ContentBook,
+  ContentChapter,
+  ContentChapterSummary,
+} from '../models/contentModels';
 
 @Injectable({
   providedIn: 'root',
@@ -171,6 +176,26 @@ export class ApiService {
       .pipe(
         shareReplay(1) // Cache the value and share it with all subscribers
       );
+  }
+
+  getContentBooks(): Observable<ContentBook[]> {
+    return this._httpClient.get<ContentBook[]>(
+      `${environment.apiUrl}/content/books`
+    );
+  }
+
+  getContentChapters(bookId: string): Observable<ContentChapterSummary[]> {
+    return this._httpClient.get<ContentChapterSummary[]>(
+      `${environment.apiUrl}/content/books/${encodeURIComponent(
+        bookId
+      )}/chapters`
+    );
+  }
+
+  getContentChapter(chapterId: number): Observable<ContentChapter> {
+    return this._httpClient.get<ContentChapter>(
+      `${environment.apiUrl}/content/chapters/${chapterId}`
+    );
   }
 
   addNounToNotion(body: NotionNounDto): Observable<boolean> {

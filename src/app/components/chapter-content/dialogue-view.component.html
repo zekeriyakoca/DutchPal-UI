@@ -1,0 +1,36 @@
+<div class="rounded-lg border border-gray-200 p-4">
+  @if (dialogue().title || dialogue().audio_tracks.length) {
+  <div class="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+    @if (dialogue().title) {
+    <h4 class="text-base font-semibold text-gray-900">{{ dialogue().title }}</h4>
+    }
+    @if (dialogue().audio_tracks.length) {
+    <span class="text-xs text-gray-500">Audio: {{ dialogue().audio_tracks.join(', ') }}</span>
+    }
+  </div>
+  }
+
+  <div class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-2">
+    @for (line of dialogue().lines; track $index) {
+    @if (line.narration) {
+    <p class="dialogue-narration col-span-2 text-gray-800">{{ line.text }}</p>
+    } @else if (line.stage) {
+    <p class="dialogue-stage col-span-2 italic text-gray-500">{{ line.text }}</p>
+    } @else {
+    <span class="dialogue-speaker font-semibold text-primary-700">{{ line.speaker }}</span>
+    <span class="dialogue-line text-gray-900">{{ line.text }}</span>
+    }
+    }
+  </div>
+
+  @if (dialogue().new_words.length) {
+  <div class="mt-4">
+    <div class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500">New words</div>
+    <div class="flex flex-wrap gap-1.5">
+      @for (word of dialogue().new_words; track $index) {
+      <span class="new-word-chip rounded-full bg-primary-50 px-2.5 py-0.5 text-sm text-primary-800">{{ word }}</span>
+      }
+    </div>
+  </div>
+  }
+</div>
