@@ -14,6 +14,7 @@ import { GrammarTopicComponent } from '../../components/chapter-content/grammar-
 import {
   cultureText,
   exercisePrompts,
+  exerciseText,
 } from '../../components/chapter-content/content-format';
 import { PLAYABLE_EXERCISE_TYPES } from '../../components/chapter-content/exercise-check';
 import { PlayableExerciseComponent } from '../../components/chapter-content/playable-exercise.component';
@@ -35,6 +36,7 @@ export class StudyBookChapterComponent {
 
   readonly generatedAnswers = GENERATED_ANSWERS_SOURCE;
   readonly exercisePrompts = exercisePrompts;
+  readonly exerciseText = exerciseText;
   readonly playableTypes = PLAYABLE_EXERCISE_TYPES;
   readonly cultureText = cultureText;
 

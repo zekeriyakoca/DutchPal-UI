@@ -141,6 +141,19 @@ export function exercisePrompts(
     .filter((p) => p.length > 0);
 }
 
+/** The reading text an exercise is built on (e.g. a "Tekst" section), if it prints one. */
+export function exerciseText(
+  payload: Record<string, unknown> | null | undefined
+): { title: string; text: string; source: string } | null {
+  const text = payload?.['text'] ?? payload?.['source_text'];
+  if (typeof text !== 'string' || !text.trim()) return null;
+  return {
+    title: typeof payload?.['title'] === 'string' ? payload['title'] : '',
+    text,
+    source: typeof payload?.['source'] === 'string' ? payload['source'] : '',
+  };
+}
+
 /** Culture boxes may be plain strings or {title, text}-like objects. */
 export function cultureText(box: unknown): { title: string; text: string } {
   if (!isRecord(box)) return { title: '', text: formatValue(box) };

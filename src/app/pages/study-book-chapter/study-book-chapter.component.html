@@ -119,6 +119,14 @@
           }
           @if (exercise.book_page) {<span class="ml-auto text-xs text-gray-500">p. {{ exercise.book_page }}</span>}
         </div>
+        @let reading = exerciseText(exercise.payload);
+        @if (reading) {
+        <div class="exercise-text mt-2 rounded bg-gray-50 p-3 text-gray-800">
+          @if (reading.title) {<div class="mb-1 font-medium text-gray-900">{{ reading.title }}</div>}
+          <p class="whitespace-pre-line">{{ reading.text }}</p>
+          @if (reading.source) {<p class="mt-1 text-xs text-gray-500">{{ reading.source }}</p>}
+        </div>
+        }
         @if (exercise.instruction) {
         <p class="mt-1 text-gray-700">{{ exercise.instruction }}</p>
         }
