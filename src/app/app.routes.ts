@@ -13,4 +13,14 @@ export const routes: Routes = [
   { path: 'translation', component: TranslationComponent },
   { path: 'vocab-game', component: VocabGameComponent },
   { path: 'study-book', component: BookChaptersComponent },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./pages/profile/profile.component').then((m) => m.ProfileComponent),
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./pages/settings/settings.component').then((m) => m.SettingsComponent),
+  },
 ];

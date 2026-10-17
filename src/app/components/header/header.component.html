@@ -14,9 +14,37 @@
       }
     </div>
 
-    <div class="hidden lg:flex lg:w-32 lg:justify-end">
-      <a href="#" class="rounded-control px-3 py-2 text-sm font-semibold text-ink-muted hover:text-ink">Log in <span
-          aria-hidden="true">&rarr;</span></a>
+    <div #userMenu class="relative hidden lg:flex lg:min-w-32 lg:justify-end"
+      (document:click)="closeUserMenuOnOutsideClick($event, userMenu)">
+      @if (authService.user(); as user) {
+      <button type="button" class="rounded-full p-0.5 transition-shadow hover:ring-2 hover:ring-primary-100"
+        aria-haspopup="menu" [attr.aria-expanded]="isUserMenuOpen()" (click)="isUserMenuOpen.set(!isUserMenuOpen())">
+        <span class="sr-only">Open user menu</span>
+        @if (user.picture) {
+        <img class="size-9 rounded-full" [src]="user.picture" alt="" referrerpolicy="no-referrer" />
+        } @else {
+        <span class="flex size-9 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-700"
+          aria-hidden="true">{{ (user.name || user.email).charAt(0).toUpperCase() }}</span>
+        }
+      </button>
+      @if (isUserMenuOpen()) {
+      <div role="menu" class="card absolute right-0 top-full mt-2 w-60 p-1.5 shadow-pop"
+        (keydown.escape)="isUserMenuOpen.set(false)">
+        <div class="border-b border-line px-3 pb-2 pt-1.5">
+          <p class="truncate text-sm font-semibold text-ink">{{ user.name }}</p>
+          <p class="truncate text-xs text-ink-muted">{{ user.email }}</p>
+        </div>
+        <a role="menuitem" routerLink="/profile" (click)="isUserMenuOpen.set(false)"
+          class="mt-1 block rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">Profile</a>
+        <a role="menuitem" routerLink="/settings" (click)="isUserMenuOpen.set(false)"
+          class="block rounded-control px-3 py-2 text-sm text-ink hover:bg-canvas">Settings</a>
+        <button type="button" role="menuitem" (click)="signOut()"
+          class="block w-full rounded-control px-3 py-2 text-left text-sm text-ink hover:bg-canvas">Sign out</button>
+      </div>
+      }
+      } @else if (authService.isEnabled) {
+      <div appGoogleSignInButton></div>
+      }
     </div>
 
     <button type="button"
@@ -42,10 +70,21 @@
       (click)="isMobileMenuOpen.set(false)"
       class="block rounded-control px-3 py-2.5 text-base font-medium text-ink hover:bg-canvas">{{ link.label }}</a>
     }
+    @if (authService.user()) {
     <div class="mt-2 border-t border-line pt-2">
-      <a href="#" class="block rounded-control px-3 py-2.5 text-base font-medium text-ink-muted hover:bg-canvas">Log
-        in</a>
+      <a routerLink="/profile" routerLinkActive="!bg-primary-50 !text-primary-700" (click)="isMobileMenuOpen.set(false)"
+        class="block rounded-control px-3 py-2.5 text-base font-medium text-ink hover:bg-canvas">Profile</a>
+      <a routerLink="/settings" routerLinkActive="!bg-primary-50 !text-primary-700" (click)="isMobileMenuOpen.set(false)"
+        class="block rounded-control px-3 py-2.5 text-base font-medium text-ink hover:bg-canvas">Settings</a>
+      <button type="button" (click)="signOut()"
+        class="block w-full rounded-control px-3 py-2.5 text-left text-base font-medium text-ink-muted hover:bg-canvas">Sign
+        out</button>
     </div>
+    } @else if (authService.isEnabled) {
+    <div class="mt-2 border-t border-line px-3 pt-3">
+      <div appGoogleSignInButton></div>
+    </div>
+    }
   </div>
   }
 </header>

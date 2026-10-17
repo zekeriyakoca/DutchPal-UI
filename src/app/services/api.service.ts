@@ -25,6 +25,15 @@ import {
   ChapterSummary,
   Chapter,
 } from '../models/contentModels';
+import {
+  AuthState,
+  NotionSettingsRequest,
+  User,
+  UserSettings,
+} from '../models/userModels';
+
+// Sends the session cookie. Production is same-origin anyway; this covers the local dev API.
+const withSession = { withCredentials: true };
 
 @Injectable({
   providedIn: 'root',
@@ -153,10 +162,7 @@ export class ApiService {
 
   addNounToNotion(body: NotionNounDto): Observable<boolean> {
     return this._httpClient
-      .post<object>(
-        `${environment.apiV2Url}/vocabulary/noun/upsert-to-notion`,
-        body
-      )
+      .post<object>(`${environment.apiUrl}/notion/noun`, body, withSession)
       .pipe(
         map((data: any) => {
           return data.count > 0;
@@ -166,14 +172,65 @@ export class ApiService {
 
   addVerbToNotion(body: NotionVerbDto): Observable<boolean> {
     return this._httpClient
-      .post<object>(
-        `${environment.apiV2Url}/vocabulary/verb/upsert-to-notion`,
-        body
-      )
+      .post<object>(`${environment.apiUrl}/notion/verb`, body, withSession)
       .pipe(
         map((data: any) => {
           return data.count > 0;
         })
       );
+  }
+
+  getMe(): Observable<AuthState> {
+    return this._httpClient.get<AuthState>(
+      `${environment.apiUrl}/auth/me`,
+      withSession
+    );
+  }
+
+  signInWithGoogle(credential: string): Observable<User> {
+    return this._httpClient.post<User>(
+      `${environment.apiUrl}/auth/google`,
+      { credential },
+      withSession
+    );
+  }
+
+  signOut(): Observable<unknown> {
+    return this._httpClient.post(
+      `${environment.apiUrl}/auth/logout`,
+      {},
+      withSession
+    );
+  }
+
+  getSettings(): Observable<UserSettings> {
+    return this._httpClient.get<UserSettings>(
+      `${environment.apiUrl}/settings`,
+      withSession
+    );
+  }
+
+  saveNotionSettings(body: NotionSettingsRequest): Observable<UserSettings> {
+    return this._httpClient.put<UserSettings>(
+      `${environment.apiUrl}/settings/notion`,
+      body,
+      withSession
+    );
+  }
+
+  useDefaultNotion(): Observable<UserSettings> {
+    return this._httpClient.delete<UserSettings>(
+      `${environment.apiUrl}/settings/notion`,
+      withSession
+    );
+  }
+
+  // Titles of the saved Notion databases, keyed by 'noun' / 'verb'
+  testNotion(): Observable<Record<string, string>> {
+    return this._httpClient.post<Record<string, string>>(
+      `${environment.apiUrl}/settings/notion/test`,
+      {},
+      withSession
+    );
   }
 }

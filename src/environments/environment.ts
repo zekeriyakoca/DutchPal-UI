@@ -3,6 +3,6 @@ export const environment = {
   apiUrl: 'http://localhost:8000',
   // apiUrl: 'https://nest.lontray.shop/dutchpal-api',
 
-  apiV2Url: 'https://localhost:7091',
-  // apiV2Url: 'https://nest.lontray.shop/dutchpal-v2-api',
+  // Google OAuth client id (public). Empty hides "Sign in with Google".
+  googleClientId: '',
 };

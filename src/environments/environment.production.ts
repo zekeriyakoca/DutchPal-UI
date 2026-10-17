@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
   apiUrl: '/dutchpal-api',
-  apiV2Url: '/dutchpal-v2-api',
+  // Google OAuth client id (public). Empty hides "Sign in with Google".
+  googleClientId: '',
 };
