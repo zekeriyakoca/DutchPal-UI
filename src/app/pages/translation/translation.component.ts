@@ -3,9 +3,12 @@ import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
 import { ApiService } from '../../services/api.service';
-import { first } from 'rxjs';
+import { finalize, first } from 'rxjs';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { DisabledUntilDirective } from '../../directives/disable-until.directive';
+import { SpinUntilDirective } from '../../directives/spin-until.directive';
+import { apiErrorMessage } from '../../services/http-error.interceptor';
 
 @Component({
   selector: 'app-translation',
@@ -15,6 +18,8 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
     FormsModule,
     MarkdownModule,
     ShowSelectionOptionsDirective,
+    DisabledUntilDirective,
+    SpinUntilDirective,
   ],
   templateUrl: './translation.component.html',
   styleUrl: './translation.component.scss',
@@ -23,6 +28,8 @@ export class TranslationComponent {
   prompt = '';
   isTextTranslation = false;
   response = signal('');
+  isLoading = signal(false);
+  error = signal('');
 
   constructor(
     private apiService: ApiService,
@@ -42,20 +49,24 @@ export class TranslationComponent {
   }
 
   translate() {
-    if (this.isTextTranslation) {
-      this.apiService
-        .translateText(this.prompt)
-        .pipe(first())
-        .subscribe((response) => {
+    if (this.isLoading() || !this.prompt.trim()) return;
+    this.isLoading.set(true);
+    this.error.set('');
+    const request = this.isTextTranslation
+      ? this.apiService.translateText(this.prompt)
+      : this.apiService.translateWord(this.prompt);
+    request
+      .pipe(
+        first(),
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (response) => {
           this.response.set(response);
-        });
-    } else {
-      this.apiService
-        .translateWord(this.prompt)
-        .pipe(first())
-        .subscribe((response) => {
-          this.response.set(response);
-        });
-    }
+        },
+        error: (err) => {
+          this.error.set(apiErrorMessage(err));
+        },
+      });
   }
 }

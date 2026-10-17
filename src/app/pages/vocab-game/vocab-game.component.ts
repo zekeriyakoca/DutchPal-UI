@@ -1,7 +1,7 @@
 import { ToastService } from './../../services/toast.service';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
 import { ApiService } from '../../services/api.service';
-import { first } from 'rxjs';
+import { finalize, first } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
@@ -11,6 +11,7 @@ import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Option } from '../../models/bootstrap';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { apiErrorMessage } from '../../services/http-error.interceptor';
 
 @Component({
   selector: 'app-vocab-game',
@@ -36,6 +37,7 @@ export class VocabGameComponent {
   selectedWordType = signal('VERB');
   itemCount = 5;
   isLoading = signal(false);
+  error = signal('');
   bookOptions = signal<Option[]>([]);
 
   constructor(
@@ -54,45 +56,41 @@ export class VocabGameComponent {
   }
 
   translate() {
+    if (this.isLoading()) return;
     this.isLoading.set(true);
+    this.error.set('');
     this.setUserPreferences();
 
-    if (this.isSentenceGame) {
-      this.apiService
-        .getSentences(this.selectedLevel, this.itemCount, this.selectedBook)
-        .pipe(first())
-        .subscribe({
-          next: (response) => {
-            this.response.set(response);
-          },
-          error: (err) => {
-            console.error('Unable to fetch sentences:', err);
-          },
-          complete: () => {
-            this.isLoading.set(false);
-          },
-        });
-    } else {
-      this.apiService
-        .getVocabulary(
+    const isSentenceGame = this.isSentenceGame;
+    const request = isSentenceGame
+      ? this.apiService.getSentences(
+          this.selectedLevel,
+          this.itemCount,
+          this.selectedBook
+        )
+      : this.apiService.getVocabulary(
           this.selectedLevel,
           this.itemCount,
           this.selectedBook,
           this.selectedWordType()
-        )
-        .pipe(first())
-        .subscribe({
-          next: (response) => {
-            this.response.set(response);
-          },
-          error: (err) => {
-            console.error('Unable to fetch vocabulary:', err);
-          },
-          complete: () => {
-            this.isLoading.set(false);
-          },
-        });
-    }
+        );
+    request
+      .pipe(
+        first(),
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (response) => {
+          this.response.set(response);
+        },
+        error: (err) => {
+          const what = isSentenceGame ? 'sentences' : 'vocabulary';
+          console.error(`Unable to fetch ${what}:`, err);
+          this.error.set(
+            `Couldn't load new ${what}. ${apiErrorMessage(err)}`
+          );
+        },
+      });
   }
 
   private retrieveUserPreferences() {

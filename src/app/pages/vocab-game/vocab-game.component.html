@@ -67,6 +67,12 @@
     </div>
   </sidebar-menu>
   <master-content>
+    @if (error()) {
+    <div role="alert" class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-left text-sm text-red-800">
+      {{ error() }}
+      <button type="button" class="ml-1 font-semibold underline" (click)="translate()">Try again</button>
+    </div>
+    }
     <article class="prose max-w-none" [appSpinUntil]="isLoading()">
       <markdown appShowSelectionOptions class="custom-md" [data]="response()"></markdown>
     </article>
