@@ -1,9 +1,15 @@
-// Used by /chat
-export interface ChatRequest {
-  message: string;
+// Used by /chat; history holds the earlier turns on the page, oldest first
+export interface ChatTurn {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
-// Used by /vocabulary (translateWord + getVocabulary)
+export interface ChatRequest {
+  message: string;
+  history: ChatTurn[];
+}
+
+// Used by /vocabulary (getVocabulary)
 export interface VocabRequest {
   message?: string;
   level?: string;
@@ -20,6 +26,11 @@ export interface TranslateRequest {
 // Used by /translate-word
 export interface TranslateWordSimpleRequest {
   message: string;
+}
+
+// Used by /word/lookup
+export interface WordLookupRequest {
+  word: string;
 }
 
 // Used by /sentences
