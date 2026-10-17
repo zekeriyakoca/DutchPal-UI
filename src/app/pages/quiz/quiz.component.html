@@ -1,102 +1,111 @@
-<app-page-concept-sidebar class="w-full">
+<app-page-concept-sidebar class="block w-full" title="Practice"
+  subtitle="Generate a quiz for your level and check your answers as you go.">
   <sidebar-menu>
     <div class="flex flex-col gap-4">
-      <div class="text-left flex-1">
-        <label for="CEFR" class="block mb-1 text-sm text-gray-900 font-normal">Select a
-          level</label>
-        <select id="CEFR" [(ngModel)]="selectedLevel" name="CEFR"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+      <div>
+        <label for="CEFR" class="field-label">Level</label>
+        <select id="CEFR" [(ngModel)]="selectedLevel" name="CEFR" class="field">
           <option value="ALL LEVELS" selected>ALL LEVELS</option>
           @for (item of ['A1','A2','B1','B2','C1','C2']; track $index) {
           <option [value]="item">{{item}}</option>
           }
         </select>
       </div>
-      <div class="text-left flex-1">
-        <label for="difficulty" class="block mb-1 text-sm font-normal text-gray-900 ">Select
-          difficulty</label>
+      <div>
+        <label for="difficulty" class="field-label">Difficulty</label>
         <select id="difficulty" [(ngModel)]="selectedDifficultyLevel" name="difficulty"
-          [disabled]="selectedQuizType == 'PARAGRAPH'"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          class="field">
           @for (item of [1,2,3,4,5,6,7,8,9,10]; track $index) {
           <option [value]="item">{{item}}</option>
           }
         </select>
       </div>
-      <div class="text-left flex-1">
-        <label for="book" class="block mb-1 text-sm font-normal text-gray-900">Select a
-          book</label>
-        <select id="book" [(ngModel)]="selectedBook" name="book" [disabled]="selectedQuizType == 'PARAGRAPH'"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          <option [value]="0" selected>ALL BOOKS</option>
+      <div>
+        <label for="book" class="field-label">Book</label>
+        <select id="book" [(ngModel)]="selectedBook" name="book"
+          class="field">
+          <option value="" selected>ALL BOOKS</option>
           @for (item of bookOptions(); track $index) {
           <option [value]="item.id">{{item.name}}</option>
           }
         </select>
       </div>
-      <div class="text-left flex-1">
-        <label for="wordType" class="block mb-1 text-sm font-normal text-gray-900">Quiz type</label>
-        <select id="wordType" [(ngModel)]="selectedQuizType" name="wordType"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-          @for (item of ['MIXED', 'PARAGRAPH', 'VOCABULARY', 'TRANSLATION', 'GRAMMAR']; track $index) {
+      <div>
+        <label for="wordType" class="field-label">Quiz type</label>
+        <select id="wordType" [(ngModel)]="selectedQuizType" name="wordType" class="field">
+          @for (item of quizTypes; track $index) {
           <option [value]="item">{{item}}</option>
           }
         </select>
       </div>
-      <div class="text-left flex-1">
-        <label for="question" class="block mb-1 text-sm font-normal text-left text-gray-900">Question Count</label>
-        <input id="question" type="number" [(ngModel)]="itemCount"
-          class="w-full px-4 py-2 text-sm rounded-md border bg-gray-50 placeholder-gray-400 text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          style="border-color: rgba(55, 48, 163, 0.19);" />
+      <div>
+        <label for="itemCount" class="field-label">Question count</label>
+        <input id="itemCount" type="number" min="1" [(ngModel)]="itemCount" class="field" />
       </div>
-      <div class="text-center flex-1">
-        <button [appDisabledUntil]="isLoading()"
-          class="w-full mt-4 px-5 py-2 bg-indigo-600 text-white font-normal rounded-lg hover:bg-indigo-700 transition"
-          (click)="translate()">
-          Generate Quiz
-        </button>
-      </div>
+      <button [appDisabledUntil]="isLoading()" class="btn-primary mt-1 w-full" (click)="translate()">
+        Generate Quiz
+      </button>
     </div>
   </sidebar-menu>
   <master-content>
-    <article class="prose max-w-none" [appSpinUntil]="isLoading()">
+    <article class="prose max-w-none min-h-[16rem] rounded-control" [appSpinUntil]="isLoading()" aria-live="polite">
       @if (questions(); as questions) {
-      <div appShowSelectionOptions class="custom-md">
+      <div appShowSelectionOptions class="custom-md mx-auto max-w-reading">
+        @if (questions.length) {
+        <div class="not-prose mb-6 flex items-center justify-between text-sm text-ink-muted">
+          <span>{{ questions.length }} questions</span>
+          <span>Score {{ score() }} / {{ questions.length }}</span>
+        </div>
+        }
         @for (q of questions; track $index; let i = $index) {
-        <div class="mb-8">
-          <p class="font-semibold text-indigo-950">{{ i + 1 }}. {{ q.question }}</p>
+        <div class="not-prose mb-6 rounded-card border border-line p-4 sm:p-5">
+          <p class="mb-3 font-semibold text-ink">
+            <span class="mr-1 text-primary-600">{{ i + 1 }}.</span> {{ q.question }}
+          </p>
           <div class="flex flex-col gap-2">
             @for (option of q.options; track $index) {
-            <button class="text-left px-4 py-2 rounded-md border transition" [disabled]="choices()[i] !== null"
-              [ngClass]="choices()[i] === null ? 'border-gray-300 hover:bg-indigo-50'
-                : option === q.answer ? 'border-green-600 bg-green-50 text-green-800'
-                : option === choices()[i] ? 'border-pink-700 bg-pink-50 text-pink-800'
-                : 'border-gray-200 text-gray-400'"
+            <button class="rounded-control border px-4 py-2.5 text-left transition-colors"
+              [disabled]="choices()[i] !== null"
+              [ngClass]="choices()[i] === null ? 'border-line bg-white hover:border-primary-300 hover:bg-primary-50'
+                : option === q.answer ? 'border-success-500 bg-success-50 text-success-800'
+                : option === choices()[i] ? 'border-danger-400 bg-danger-50 text-danger-800'
+                : 'border-line text-ink-subtle'"
               (click)="choose(i, option)">{{ option }}</button>
             }
           </div>
           @if (choices()[i] !== null) {
-          <p [class]="choices()[i] === q.answer ? 'text-green-700' : 'text-pink-700'">
+          <p class="mt-3 font-medium" [class]="choices()[i] === q.answer ? 'text-success-700' : 'text-danger-700'">
             {{ choices()[i] === q.answer ? 'Goed!' : 'Fout. Het antwoord is: ' + q.answer }}
           </p>
           @if (q.explanation) {
-          <p class="text-gray-600">{{ q.explanation }}</p>
+          <p class="mt-1 text-sm text-ink-muted">{{ q.explanation }}</p>
           }
           }
         </div>
         } @empty {
-        <p>No questions could be generated. Please try again.</p>
+        <div class="not-prose empty-state">
+          <h2>No questions</h2>
+          <p class="text-sm">No questions could be generated. Please try again.</p>
+        </div>
         }
         @if (questions.length && isFinished()) {
-        <div>
-          <p class="text-2xl font-semibold text-indigo-950">Score {{ score() }} / {{ questions.length }}</p>
-          <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
-            (click)="restart()">Opnieuw</button>
+        <div class="not-prose rounded-card bg-primary-50 p-6 text-center">
+          <p class="font-display text-2xl font-semibold text-primary-900">Score {{ score() }} / {{ questions.length }}
+          </p>
+          <button class="btn-primary mt-3" (click)="restart()">Opnieuw</button>
         </div>
         }
       </div>
-      } @else {
-      <markdown appShowSelectionOptions class="custom-md" [data]="response()"></markdown>
+      } @else if (!isLoading()) {
+      <div class="not-prose empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <h2>No quiz yet</h2>
+        <p class="text-sm">Choose a level and quiz type, then press “Generate Quiz”.</p>
+      </div>
       }
     </article>
   </master-content>

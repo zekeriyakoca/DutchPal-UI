@@ -4,7 +4,6 @@ import { ApiService } from '../../services/api.service';
 import { first } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MarkdownModule } from 'ngx-markdown';
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
@@ -19,7 +18,6 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
   imports: [
     CommonModule,
     FormsModule,
-    MarkdownModule,
     PageConceptSidebarComponent,
     DisabledUntilDirective,
     SpinUntilDirective,
@@ -30,15 +28,13 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class VocabGameComponent {
-  isSentenceGame = false;
-  response = signal('');
   words = signal<VocabItem[] | null>(null);
   isCardMode = signal(false);
   cardIndex = signal(0);
   isRevealed = signal(false);
   knownCount = signal(0);
   selectedLevel = 'ALL LEVELS';
-  selectedBook = 0;
+  selectedBook = '';
   selectedWordType = signal('VERB');
   itemCount = 5;
   isLoading = signal(false);
@@ -63,44 +59,26 @@ export class VocabGameComponent {
     this.isLoading.set(true);
     this.setUserPreferences();
 
-    if (this.isSentenceGame) {
-      this.apiService
-        .getSentences(this.selectedLevel, this.itemCount, this.selectedBook)
-        .pipe(first())
-        .subscribe({
-          next: (response) => {
-            this.words.set(null);
-            this.response.set(response);
-          },
-          error: (err) => {
-            console.error('Unable to fetch sentences:', err);
-          },
-          complete: () => {
-            this.isLoading.set(false);
-          },
-        });
-    } else {
-      this.apiService
-        .getVocabulary(
-          this.selectedLevel,
-          this.itemCount,
-          this.selectedBook,
-          this.selectedWordType()
-        )
-        .pipe(first())
-        .subscribe({
-          next: (words) => {
-            this.words.set(words);
-            this.restartCards();
-          },
-          error: (err) => {
-            console.error('Unable to fetch vocabulary:', err);
-          },
-          complete: () => {
-            this.isLoading.set(false);
-          },
-        });
-    }
+    this.apiService
+      .getVocabulary(
+        this.selectedLevel,
+        this.itemCount,
+        this.selectedBook,
+        this.selectedWordType()
+      )
+      .pipe(first())
+      .subscribe({
+        next: (words) => {
+          this.words.set(words);
+          this.restartCards();
+        },
+        error: (err) => {
+          console.error('Unable to fetch vocabulary:', err);
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        },
+      });
   }
 
   answerCard(known: boolean) {
@@ -135,15 +113,11 @@ export class VocabGameComponent {
   }
 
   private retrieveUserPreferences() {
-    this.isSentenceGame = this.userPreferences.get(
-      'vocab-game.isSentenceGame',
-      false
-    );
     this.selectedLevel = this.userPreferences.get(
       'vocab-game.selectedLevel',
       'ALL LEVELS'
     );
-    this.selectedBook = this.userPreferences.get('vocab-game.selectedBook', 0);
+    this.selectedBook = this.userPreferences.get('vocab-game.bookId', '');
     this.selectedWordType.set(
       this.userPreferences.get('vocab-game.selectedWordType', 'VERB')
     );
@@ -151,9 +125,8 @@ export class VocabGameComponent {
   }
 
   private setUserPreferences() {
-    this.userPreferences.set('vocab-game.isSentenceGame', this.isSentenceGame);
     this.userPreferences.set('vocab-game.selectedLevel', this.selectedLevel);
-    this.userPreferences.set('vocab-game.selectedBook', this.selectedBook);
+    this.userPreferences.set('vocab-game.bookId', this.selectedBook);
     this.userPreferences.set(
       'vocab-game.selectedWordType',
       this.selectedWordType()

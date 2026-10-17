@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 
 @Component({
   selector: 'app-page-concept-sidebar',
@@ -7,6 +7,8 @@ import { Component, signal } from '@angular/core';
   styleUrl: './page-concept-sidebar.component.scss',
 })
 export class PageConceptSidebarComponent {
+  title = input('');
+  subtitle = input('');
   isMenuOpen = signal(true);
 
   toggleMenu() {

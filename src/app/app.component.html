@@ -1,15 +1,12 @@
-<div class="flex min-h-screen">
+<div class="flex min-h-screen flex-col">
+  <app-header class="sticky top-0 z-40"></app-header>
 
-  <div class="fixed h-16 pl-16 w-full z-10 px-4 bg-white text-white">
-    <app-header></app-header>
-  </div>
+  <main class="flex-1">
+    <router-outlet></router-outlet>
+  </main>
 
-  <!-- Right Content -->
-  <div class="flex flex-col w-full mt-16">
-    <router-outlet class="flex"></router-outlet>
-    <app-toast [data]="toast$ | async"></app-toast>
-    <app-permanent-toast [data]="permanentToast()" title="What It Means"></app-permanent-toast>
-  </div>
+  <app-footer></app-footer>
 </div>
 
-<app-footer class="w-full "></app-footer>
+<app-toast [data]="toast$ | async"></app-toast>
+<app-permanent-toast [data]="permanentToast()" title="What It Means"></app-permanent-toast>
