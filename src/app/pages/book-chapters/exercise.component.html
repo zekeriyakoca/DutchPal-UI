@@ -1,0 +1,71 @@
+@let ex = exercise();
+<h3>{{ex.label}}</h3>
+@if (ex.instruction) {
+<p>{{ex.instruction}}</p>
+}
+@if (playable() && ex.answers_source === 'generated_needs_review') {
+<p class="text-xs text-amber-700">These answers were generated, not printed in the book. They may need review.</p>
+}
+
+@if (ex.payload.text || ex.payload.source_text) {
+@if (ex.payload.title) {
+<h4>{{ex.payload.title}}</h4>
+}
+<p class="whitespace-pre-line">{{ex.payload.text || ex.payload.source_text}}</p>
+}
+@if (playable()) {
+@if (ex.payload.options; as bank) {
+<div class="not-prose flex flex-wrap gap-2">
+  @for (word of bank; track $index) {
+  <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700">{{word}}</span>
+  }
+</div>
+}
+<ol>
+  @for (item of items(); track $index; let i = $index) {
+  <li [value]="item.n">
+    @if (item.cue) {
+    <span class="text-gray-500">{{item.cue}}</span><br />
+    }
+    @for (part of item.parts; track $index; let g = $index) {
+    {{part}}
+    @if (!$last) {
+    @if (item.options) {
+    @for (option of item.options; track option) {
+    <button type="button" (click)="given[i][g] = option" [disabled]="!!results"
+      class="mx-0.5 px-2 py-0.5 rounded-md text-sm"
+      [class]="given[i][g] === option ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'">{{option}}</button>
+    }
+    } @else {
+    <input [(ngModel)]="given[i][g]" [disabled]="!!results" (keyup.enter)="check()"
+      class="w-32 px-2 py-0.5 text-sm rounded-md border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+    }
+    @if (results) {
+    @if (results[i][g]) {
+    <span class="text-green-600">✓</span>
+    } @else {
+    <span class="text-red-600">✗ {{item.expected[g].split('|').join(' / ')}}</span>
+    }
+    }
+    }
+    }
+    @if (results && item.response) {
+    <br /><span class="text-gray-500">{{item.response}}</span>
+    }
+  </li>
+  }
+</ol>
+<div class="not-prose flex items-center gap-3">
+  <button class="px-5 py-2 bg-indigo-600 text-white font-normal rounded-lg hover:bg-indigo-700 transition"
+    (click)="results ? reset() : check()">{{results ? 'Opnieuw' : 'Controleer'}}</button>
+  @if (results) {
+  <span class="text-sm text-gray-900">Score: {{score}}</span>
+  }
+</div>
+} @else if (!ex.payload.text && !ex.payload.source_text) {
+<ol>
+  @for (item of items(); track $index) {
+  <li [value]="item.n">{{item.text ?? item.q}}</li>
+  }
+</ol>
+}

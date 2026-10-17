@@ -1,0 +1,170 @@
+<app-page-concept-sidebar class="w-full">
+  <sidebar-menu>
+    <div class="flex flex-col gap-4">
+      <app-study-book-tabs />
+      <div class="text-left flex-1">
+        <label for="book" class="block mb-1 text-sm font-normal text-gray-900">Select a book</label>
+        <select id="book" [ngModel]="selectedBook" (ngModelChange)="setBookSelected($event)" name="book"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <option value="" disabled>Select an Option</option>
+          @for (book of books(); track book.book_id) {
+          <option [value]="book.book_id">{{book.title}}{{book.cefr ? ' (' + book.cefr + ')' : ''}}</option>
+          }
+        </select>
+      </div>
+      @if (chapters().length) {
+      <div class="text-left flex-1">
+        <label for="chapter" class="block mb-1 text-sm font-normal text-gray-900">Select a chapter</label>
+        <select id="chapter" [ngModel]="selectedChapter" (ngModelChange)="setChapterSelected($event)" name="chapter"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          @for (item of chapters(); track item.id) {
+          <option [ngValue]="item.id">{{item.number}}. {{item.title}}</option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+  </sidebar-menu>
+  <master-content>
+    <article class="prose max-w-none" [appSpinUntil]="isLoading()">
+      <div appShowSelectionOptions>
+        @if (chapter(); as ch) {
+        <h1>{{ch.number}}. {{ch.title}}</h1>
+        <p class="text-sm text-gray-500">
+          {{ch.book_title}}
+          @if (ch.book_pages) { · p. {{ch.book_pages[0]}}–{{ch.book_pages[1]}} }
+        </p>
+        @if (ch.note) {
+        <p class="text-sm italic text-gray-500">{{ch.note}}</p>
+        }
+        @if (ch.goals.length) {
+        <ul>
+          @for (goal of ch.goals; track $index) {
+          <li>{{goal}}</li>
+          }
+        </ul>
+        }
+
+        @for (dialogue of ch.dialogues; track dialogue.id) {
+        <h2>{{dialogue.title || 'Dialoog'}}</h2>
+        @for (line of dialogue.lines; track $index) {
+        @if (line.narration) {
+        <p>{{line.text}}</p>
+        } @else {
+        <p class="my-1" [class.italic]="line.stage">
+          @if (line.speaker) {<strong>{{line.speaker}}:</strong>}
+          {{line.text}}
+        </p>
+        }
+        }
+        @if (dialogue.new_words.length) {
+        <div class="not-prose flex flex-wrap gap-2 mt-4">
+          @for (word of dialogue.new_words; track $index) {
+          <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700">{{word}}</span>
+          }
+        </div>
+        }
+        }
+
+        @if (ch.vocabulary.length) {
+        <h2>Vocabulary</h2>
+        }
+        @for (list of ch.vocabulary; track $index) {
+        @if (list.list) {
+        <h3>{{list.list}}</h3>
+        }
+        <table>
+          <tbody>
+            @for (item of list.items; track $index) {
+            <tr>
+              <td>
+                @if (item.article && !item.nl.startsWith(item.article + ' ')) { {{item.article}} }
+                {{item.nl}}
+              </td>
+              <td>{{item.en}}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+
+        @if (ch.grammar.length) {
+        <h2>Grammar</h2>
+        }
+        @for (topic of ch.grammar; track topic.id) {
+        <h3>{{topic.title}}</h3>
+        @if (topic.content.table; as table) {
+        <table>
+          <thead>
+            <tr>
+              @for (column of table.columns; track $index) {
+              <th>{{column}}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of table.rows; track $index) {
+            <tr>
+              @for (cell of row; track $index) {
+              <td>{{cell}}</td>
+              }
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+        @if (topic.content.pairs; as pairs) {
+        <table>
+          <tbody>
+            @for (pair of pairs; track $index) {
+            <tr>
+              <td>{{pair.q}}</td>
+              <td>{{pair.a}}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+        @for (list of [topic.content.examples, topic.content.phrases]; track $index) {
+        @if (list) {
+        <ul>
+          @for (line of list; track $index) {
+          <li>{{line}}</li>
+          }
+        </ul>
+        }
+        }
+        @if (topic.content.note) {
+        <p>{{topic.content.note}}</p>
+        }
+        }
+
+        @if (ch.exercises.length) {
+        <h2>Exercises</h2>
+        }
+        @for (exercise of ch.exercises; track exercise.id) {
+        <app-exercise [exercise]="exercise" />
+        }
+
+        @for (box of ch.culture; track $index) {
+        <div class="border-l-4 border-indigo-200 pl-4 my-6">
+          @if (box.title) {
+          <h3 class="mt-0">{{box.title}}</h3>
+          }
+          <p class="whitespace-pre-line">{{box.text}}</p>
+        </div>
+        }
+
+        @if (ch.reflection?.can_do?.length) {
+        <h2>Can do</h2>
+        <ul>
+          @for (item of ch.reflection!.can_do; track $index) {
+          <li>{{item}}</li>
+          }
+        </ul>
+        }
+        }
+      </div>
+    </article>
+  </master-content>
+</app-page-concept-sidebar>

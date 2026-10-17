@@ -4,6 +4,7 @@ import { TranslationComponent } from './pages/translation/translation.component'
 import { VocabGameComponent } from './pages/vocab-game/vocab-game.component';
 import { StudyBookComponent } from './pages/study-book/study-book.component';
 import { QuizComponent } from './pages/quiz/quiz.component';
+import { BookChaptersComponent } from './pages/book-chapters/book-chapters.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'quiz', component: QuizComponent },
   { path: 'translation', component: TranslationComponent },
   { path: 'vocab-game', component: VocabGameComponent },
-  { path: 'study-book', component: StudyBookComponent },
+  { path: 'study-book', component: BookChaptersComponent },
+  { path: 'study-book/ai', component: StudyBookComponent },
 ];
