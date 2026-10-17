@@ -13,6 +13,17 @@
 }
 <p class="whitespace-pre-line">{{ex.payload.text || ex.payload.source_text}}</p>
 }
+@if (ex.payload.video) {
+<video controls preload="metadata" [src]="mediaUrl(ex.payload.video)" class="w-full rounded-control"></video>
+} @else if (ex.payload.audio) {
+<audio controls preload="metadata" [src]="mediaUrl(ex.payload.audio)" class="my-4 w-full"></audio>
+}
+@if (ex.payload.situation) {
+<p class="whitespace-pre-line text-ink-muted">{{ex.payload.situation}}</p>
+}
+@if (ex.payload.prompt) {
+<p class="whitespace-pre-line">{{ex.payload.prompt}}</p>
+}
 @if (playable()) {
 @if (ex.payload.options; as bank) {
 <div class="not-prose flex flex-wrap gap-2">
@@ -31,11 +42,13 @@
     {{part}}
     @if (!$last) {
     @if (item.options) {
-    @for (option of item.options; track option) {
-    <button type="button" (click)="given[i][g] = option" [disabled]="!!results"
-      class="mx-0.5 my-0.5 rounded-control px-2.5 py-0.5 text-sm font-medium transition-colors"
-      [class]="given[i][g] === option ? 'bg-primary-600 text-white' : 'bg-canvas text-ink ring-1 ring-line hover:bg-primary-50'">{{option}}</button>
-    }
+    <span [class.flex]="item.stacked" class="mt-1 flex-col items-start gap-1">
+      @for (option of item.options; track option) {
+      <button type="button" (click)="given[i][g] = option" [disabled]="!!results"
+        class="mx-0.5 my-0.5 rounded-control px-2.5 py-0.5 text-left text-sm font-medium transition-colors"
+        [class]="given[i][g] === option ? 'bg-primary-600 text-white' : 'bg-canvas text-ink ring-1 ring-line hover:bg-primary-50'">{{option}}</button>
+      }
+    </span>
     } @else {
     <input [(ngModel)]="given[i][g]" [disabled]="!!results" (keyup.enter)="check()"
       class="w-32 rounded-control border border-line bg-white px-2 py-0.5 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:bg-canvas" />
@@ -62,10 +75,34 @@
   <span class="text-sm font-medium text-ink">Score: {{score}}</span>
   }
 </div>
-} @else if (!ex.payload.text && !ex.payload.source_text) {
+} @else if (!ex.payload.text && !ex.payload.source_text && items().length) {
 <ol>
   @for (item of items(); track $index) {
   <li [value]="item.n">{{item.text ?? item.q}}</li>
   }
 </ol>
+}
+
+@if (assessed()) {
+@if (ex.type === 'writing') {
+<textarea rows="8" aria-label="Your answer" placeholder="Schrijf hier je antwoord…" class="field resize-y"></textarea>
+}
+<div class="not-prose my-4">
+  <button class="btn-secondary" (click)="showAssessment = !showAssessment">{{showAssessment ? 'Verberg beoordeling' :
+    'Toon beoordeling'}}</button>
+</div>
+@if (showAssessment) {
+@if (ex.payload.criteria?.length) {
+<h4>Beoordeling</h4>
+<ul>
+  @for (criterion of ex.payload.criteria; track $index) {
+  <li>{{criterion}}</li>
+  }
+</ul>
+}
+@if (ex.payload.model_answer) {
+<h4>Voorbeeldantwoord</h4>
+<p class="whitespace-pre-line rounded-control bg-canvas px-4 py-3">{{ex.payload.model_answer}}</p>
+}
+}
 }

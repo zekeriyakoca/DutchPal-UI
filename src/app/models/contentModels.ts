@@ -58,6 +58,7 @@ export interface ExerciseItem {
   response?: string;
   options?: string[];
   answer?: string;
+  a?: string;
 }
 
 export interface Exercise {
@@ -73,6 +74,13 @@ export interface Exercise {
     source_text?: string;
     options?: string[];
     items?: ExerciseItem[];
+    // Exam tasks: listening/speaking media paths (served by /media) and writing/speaking assessment.
+    audio?: string;
+    video?: string;
+    prompt?: string;
+    situation?: string;
+    criteria?: string[];
+    model_answer?: string;
   };
 }
 
