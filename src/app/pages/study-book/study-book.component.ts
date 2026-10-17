@@ -12,6 +12,7 @@ import { Option } from '../../models/bootstrap';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { StudyBookTabsComponent } from '../../components/study-book-tabs/study-book-tabs.component';
 
 @Component({
   selector: 'app-study-book',
@@ -24,6 +25,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
     DisabledUntilDirective,
     SpinUntilDirective,
     ShowSelectionOptionsDirective,
+    StudyBookTabsComponent,
   ],
   templateUrl: './study-book.component.html',
   styleUrl: './study-book.component.scss',
