@@ -68,7 +68,94 @@
   </sidebar-menu>
   <master-content>
     <article class="prose max-w-none" [appSpinUntil]="isLoading()">
+      @if (words(); as words) {
+      <div appShowSelectionOptions class="custom-md">
+        @if (!words.length) {
+        <p>No vocabulary found.</p>
+        } @else {
+        <div class="flex justify-end gap-2">
+          <button class="px-3 py-1 text-sm rounded-md border"
+            [ngClass]="isCardMode() ? 'border-gray-300 text-gray-700' : 'border-indigo-600 bg-indigo-600 text-white'"
+            (click)="isCardMode.set(false)">Tabel</button>
+          <button class="px-3 py-1 text-sm rounded-md border"
+            [ngClass]="isCardMode() ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-700'"
+            (click)="isCardMode.set(true); restartCards()">Kaarten</button>
+        </div>
+        @if (!isCardMode()) {
+        <table>
+          <thead>
+            <tr>
+              <th>Word</th>
+              <th>Level</th>
+              <th>Examples</th>
+              <th>Present</th>
+              <th>V2</th>
+              <th>V3</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of words; track $index) {
+            <tr>
+              <td><strong>{{ item.word }}</strong></td>
+              <td>{{ item.cefr_level }}</td>
+              <td>
+                @for (example of item.examples; track $index) {
+                <div>
+                  @for (part of exampleParts(item, example); track $index) {@if ($odd) {<strong>{{ part }}</strong>} @else {<span>{{ part }}</span>}}
+                </div>
+                }
+              </td>
+              <td>{{ item.present_form }}</td>
+              <td>{{ item.v2_form }}</td>
+              <td>{{ item.v3_form }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        } @else if (cardIndex() < words.length) {
+        @let item = words[cardIndex()];
+        <p class="text-sm text-gray-500">
+          Kaart {{ cardIndex() + 1 }} / {{ words.length }} · Score {{ knownCount() }} / {{ cardIndex() }}
+        </p>
+        <div class="my-6 p-8 border border-gray-200 rounded-lg">
+          <p class="text-3xl font-semibold text-indigo-950">{{ item.word }}</p>
+          @if (isRevealed()) {
+          <p class="text-gray-600">
+            {{ item.pos }}{{ item.cefr_level ? ' · ' + item.cefr_level : '' }}
+          </p>
+          @if (item.present_form || item.v2_form || item.v3_form) {
+          <p>{{ item.present_form }} · {{ item.v2_form }} · {{ item.v3_form }}</p>
+          }
+          @for (example of item.examples; track $index) {
+          <p>
+            @for (part of exampleParts(item, example); track $index) {@if ($odd) {<strong>{{ part }}</strong>} @else {<span>{{ part }}</span>}}
+          </p>
+          }
+          }
+        </div>
+        <div class="flex gap-3">
+          @if (!isRevealed()) {
+          <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            (click)="isRevealed.set(true)">Toon</button>
+          } @else {
+          <button class="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            (click)="answerCard(true)">Wist ik</button>
+          <button class="px-5 py-2 bg-pink-700 text-white rounded-lg hover:bg-pink-800 transition"
+            (click)="answerCard(false)">Wist ik niet</button>
+          }
+        </div>
+        } @else {
+        <div class="my-6">
+          <p class="text-2xl font-semibold text-indigo-950">Score {{ knownCount() }} / {{ words.length }}</p>
+          <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            (click)="restartCards()">Opnieuw</button>
+        </div>
+        }
+        }
+      </div>
+      } @else {
       <markdown appShowSelectionOptions class="custom-md" [data]="response()"></markdown>
+      }
     </article>
   </master-content>
 </app-page-concept-sidebar>
