@@ -14,6 +14,15 @@ export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   );
 };
 
+// Message for inline panel errors: the backend's `detail` when it sends one.
+export function apiErrorMessage(error: unknown): string {
+  if (!(error instanceof HttpErrorResponse)) {
+    return 'Something went wrong. Please try again.';
+  }
+  const detail = error.error?.detail;
+  return typeof detail === 'string' && detail ? detail : toErrorMessage(error);
+}
+
 function toErrorMessage(error: HttpErrorResponse): string {
   if (error.status === 0) {
     return 'Cannot reach the server. Check your connection and try again.';
