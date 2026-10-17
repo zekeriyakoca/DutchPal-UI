@@ -6,7 +6,6 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
-import { StudyBookTabsComponent } from '../study-book/study-book-tabs.component';
 import { ExerciseComponent } from './exercise.component';
 import {
   Chapter,
@@ -22,7 +21,6 @@ import {
     PageConceptSidebarComponent,
     SpinUntilDirective,
     ShowSelectionOptionsDirective,
-    StudyBookTabsComponent,
     ExerciseComponent,
   ],
   templateUrl: './book-chapters.component.html',

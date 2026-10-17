@@ -19,12 +19,7 @@ import {
   TranslateWordSimpleRequest,
   WordLookupRequest,
 } from '../models/apiRequestModels';
-import { BootstrapData, Option } from '../models/bootstrap';
-import {
-  SentenceDto,
-  SectionDto,
-  SectionContentDto,
-} from '../models/sectionModels';
+import { BootstrapData } from '../models/bootstrap';
 import { NotionVerbDto, NotionNounDto } from '../models/notionModels';
 import {
   ContentBook,
@@ -152,37 +147,6 @@ export class ApiService {
       `${environment.apiUrl}/quiz`,
       body
     );
-  }
-
-  getSectionNamesOfBook(bookId: number): Observable<Option[]> {
-    return this._httpClient
-      .get<Option[]>(`${environment.apiV2Url}/books/${bookId}/section-options`)
-      .pipe(
-        shareReplay(1) // Cache the value and share it with all subscribers
-      );
-  }
-
-  getSectionContent(bookId: number, sectionId: number): Observable<string> {
-    return this._httpClient
-      .get<SectionContentDto>(
-        `${environment.apiV2Url}/books/${bookId}/sections/${sectionId}`
-      )
-      .pipe(
-        map((response: SectionContentDto) => response.content),
-        shareReplay(1) // Cache the value and share it with all subscribers
-      );
-  }
-  getSectionSectences(
-    bookId: number,
-    sectionId: number
-  ): Observable<SentenceDto[]> {
-    return this._httpClient
-      .get<SentenceDto[]>(
-        `${environment.apiV2Url}/books/${bookId}/sections/${sectionId}/sentences`
-      )
-      .pipe(
-        shareReplay(1) // Cache the value and share it with all subscribers
-      );
   }
 
   getContentBooks(): Observable<ContentBook[]> {
