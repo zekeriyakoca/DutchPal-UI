@@ -10,19 +10,19 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       <a
         routerLink="/study-book"
         routerLinkActive
-        #ai="routerLinkActive"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="rounded-full px-4 py-1.5 ring-1 ring-primary-200"
-        [class]="ai.isActive ? 'bg-primary-700 text-white' : 'text-primary-700 hover:bg-primary-50'"
-        >AI study book</a
-      >
-      <a
-        routerLink="/study-book/chapters"
-        routerLinkActive
         #book="routerLinkActive"
+        [routerLinkActiveOptions]="{ exact: true }"
         class="rounded-full px-4 py-1.5 ring-1 ring-primary-200"
         [class]="book.isActive ? 'bg-primary-700 text-white' : 'text-primary-700 hover:bg-primary-50'"
         >Book chapters</a
+      >
+      <a
+        routerLink="/study-book/ai"
+        routerLinkActive
+        #ai="routerLinkActive"
+        class="rounded-full px-4 py-1.5 ring-1 ring-primary-200"
+        [class]="ai.isActive ? 'bg-primary-700 text-white' : 'text-primary-700 hover:bg-primary-50'"
+        >AI study book</a
       >
     </nav>
   `,

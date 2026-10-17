@@ -1,90 +1,89 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { first } from 'rxjs';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { finalize, first } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { UserPreferencesService } from '../../services/user-preferences.service';
+import { apiErrorMessage } from '../../services/http-error.interceptor';
+import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { StudyBookTabsComponent } from '../../components/study-book-tabs/study-book-tabs.component';
+import { ChapterViewComponent } from '../../components/chapter-content/chapter-view.component';
+import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import {
   ContentBook,
+  ContentChapter,
   ContentChapterSummary,
 } from '../../models/contentModels';
 
 @Component({
   selector: 'app-study-book-chapters',
   standalone: true,
-  imports: [RouterLink, StudyBookTabsComponent],
+  imports: [
+    FormsModule,
+    PageConceptSidebarComponent,
+    StudyBookTabsComponent,
+    ChapterViewComponent,
+    SpinUntilDirective,
+  ],
   templateUrl: './study-book-chapters.component.html',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class StudyBookChaptersComponent {
-  private apiService = inject(ApiService);
-  private router = inject(Router);
-
+  selectedBook = '';
+  selectedChapter = 0;
   books = signal<ContentBook[]>([]);
-  booksLoading = signal(true);
-  booksError = signal(false);
-
-  selectedBookId = signal<string | null>(null);
   chapters = signal<ContentChapterSummary[]>([]);
-  chaptersLoading = signal(false);
-  chaptersError = signal(false);
+  chapter = signal<ContentChapter | null>(null);
+  isLoading = signal(false);
+  error = signal('');
 
-  constructor() {
-    this.loadBooks();
-    inject(ActivatedRoute)
-      .queryParamMap.pipe(takeUntilDestroyed(inject(DestroyRef)))
-      .subscribe((params) => {
-        const bookId = params.get('book');
-        this.selectedBookId.set(bookId);
-        if (bookId) this.loadChapters(bookId);
-        else this.chapters.set([]);
-      });
-  }
-
-  selectedBook(): ContentBook | undefined {
-    return this.books().find((b) => b.book_id === this.selectedBookId());
-  }
-
-  selectBook(bookId: string) {
-    this.router.navigate([], { queryParams: { book: bookId } });
-  }
-
-  loadBooks() {
-    this.booksLoading.set(true);
-    this.booksError.set(false);
+  constructor(
+    private apiService: ApiService,
+    private userPreferences: UserPreferencesService
+  ) {
     this.apiService
       .getContentBooks()
       .pipe(first())
       .subscribe({
-        next: (books) => {
-          this.books.set(books);
-          this.booksLoading.set(false);
-        },
-        error: () => {
-          this.booksError.set(true);
-          this.booksLoading.set(false);
-        },
+        next: (books) => this.books.set(books),
+        error: (err) => this.error.set(apiErrorMessage(err)),
       });
+
+    const bookId = this.userPreferences.get('book-chapters.bookId', '');
+    if (bookId) {
+      this.selectBook(bookId);
+      const chapterId = this.userPreferences.get('book-chapters.chapterId', 0);
+      if (chapterId) this.selectChapter(chapterId);
+    }
   }
 
-  loadChapters(bookId: string) {
-    this.chapters.set([]);
-    this.chaptersLoading.set(true);
-    this.chaptersError.set(false);
+  selectBook(bookId: string) {
+    this.selectedBook = bookId;
+    this.selectedChapter = 0;
+    this.chapter.set(null);
+    this.userPreferences.set('book-chapters.bookId', bookId);
     this.apiService
       .getContentChapters(bookId)
       .pipe(first())
       .subscribe({
-        next: (chapters) => {
-          // Ignore a late response for a book that is no longer selected.
-          if (this.selectedBookId() !== bookId) return;
-          this.chapters.set(chapters);
-          this.chaptersLoading.set(false);
-        },
-        error: () => {
-          if (this.selectedBookId() !== bookId) return;
-          this.chaptersError.set(true);
-          this.chaptersLoading.set(false);
-        },
+        next: (chapters) => this.chapters.set(chapters),
+        error: (err) => this.error.set(apiErrorMessage(err)),
+      });
+  }
+
+  selectChapter(chapterId: number) {
+    this.selectedChapter = chapterId;
+    this.userPreferences.set('book-chapters.chapterId', chapterId);
+    this.isLoading.set(true);
+    this.error.set('');
+    this.apiService
+      .getContentChapter(chapterId)
+      .pipe(
+        first(),
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (chapter) => this.chapter.set(chapter),
+        error: (err) => this.error.set(apiErrorMessage(err)),
       });
   }
 }

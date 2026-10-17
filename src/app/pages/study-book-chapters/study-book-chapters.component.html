@@ -1,70 +1,45 @@
-<div class="mx-auto w-full max-w-5xl px-4 pb-12 pt-8 sm:px-6 lg:px-8">
+<div class="w-full px-6 pb-3 pt-4 lg:px-8">
   <app-study-book-tabs></app-study-book-tabs>
-
-  <h1 class="mt-6 text-2xl font-semibold text-gray-900">Book chapters</h1>
-  <p class="mt-1 text-sm text-gray-600">Read dialogues, vocabulary, grammar and exercises straight from the book.</p>
-
-  <section class="mt-6">
-    <h2 class="mb-2 text-sm font-medium uppercase tracking-wide text-gray-500">Books</h2>
-    @if (booksLoading()) {
-    <p class="animate-pulse text-gray-500">Loading books…</p>
-    } @else if (booksError()) {
-    <div class="flex items-center gap-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-      <span>Could not load the books.</span>
-      <button class="underline" (click)="loadBooks()">Retry</button>
-    </div>
-    } @else if (books().length === 0) {
-    <p class="text-gray-500">No books available yet.</p>
-    } @else {
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      @for (book of books(); track book.book_id) {
-      <button type="button" (click)="selectBook(book.book_id)"
-        class="rounded-lg border p-4 text-left transition hover:border-primary-400"
-        [class]="book.book_id === selectedBookId() ? 'border-primary-600 bg-primary-50' : 'border-gray-200 bg-white'">
-        <div class="font-semibold text-gray-900">{{ book.title }}</div>
-        <div class="mt-1 text-sm text-gray-600">
-          @if (book.cefr) {<span>{{ book.cefr }} · </span>}{{ book.chapter_count }} {{ book.chapter_count === 1 ? 'chapter' : 'chapters' }}
-        </div>
-      </button>
-      }
-    </div>
-    }
-  </section>
-
-  @if (selectedBookId()) {
-  <section class="mt-8">
-    <h2 class="mb-2 text-sm font-medium uppercase tracking-wide text-gray-500">
-      Chapters{{ selectedBook() ? ' — ' + selectedBook()!.title : '' }}
-    </h2>
-    @if (chaptersLoading()) {
-    <p class="animate-pulse text-gray-500">Loading chapters…</p>
-    } @else if (chaptersError()) {
-    <div class="flex items-center gap-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-      <span>Could not load the chapters.</span>
-      <button class="underline" (click)="loadChapters(selectedBookId()!)">Retry</button>
-    </div>
-    } @else if (chapters().length === 0) {
-    <p class="text-gray-500">This book has no chapters yet.</p>
-    } @else {
-    <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
-      @for (chapter of chapters(); track chapter.id) {
-      <li>
-        <a [routerLink]="['/study-book/chapters', chapter.id]" class="flex items-start gap-3 p-4 hover:bg-gray-50">
-          <span class="w-8 shrink-0 text-right font-semibold text-primary-700">{{ chapter.number }}</span>
-          <span class="flex-1">
-            <span class="block font-medium text-gray-900">{{ chapter.title }}</span>
-            @if (chapter.goals.length) {
-            <span class="mt-0.5 block line-clamp-2 text-sm text-gray-500">{{ chapter.goals.join(' · ') }}</span>
-            }
-          </span>
-          @if (chapter.has_exercises) {
-          <span class="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">exercises</span>
-          }
-        </a>
-      </li>
-      }
-    </ul>
-    }
-  </section>
-  }
 </div>
+<app-page-concept-sidebar class="w-full">
+  <sidebar-menu>
+    <div class="flex flex-col gap-4">
+      <div class="text-left flex-1">
+        <label for="book" class="block mb-1 text-sm font-normal text-gray-900">Select a book</label>
+        <select id="book" [ngModel]="selectedBook" (ngModelChange)="selectBook($event)" name="book"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <option value="" disabled>Select a book</option>
+          @for (book of books(); track book.book_id) {
+          <option [value]="book.book_id">{{ book.title }}</option>
+          }
+        </select>
+      </div>
+      @if (selectedBook) {
+      <div class="text-left flex-1">
+        <label for="chapter" class="block mb-1 text-sm font-normal text-gray-900">Select a chapter</label>
+        <select id="chapter" [ngModel]="selectedChapter" (ngModelChange)="selectChapter(+$event)" name="chapter"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          <option [value]="0" disabled>Select a chapter</option>
+          @for (item of chapters(); track item.id) {
+          <option [value]="item.id">{{ item.number }}. {{ item.title }}</option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+  </sidebar-menu>
+  <master-content>
+    @if (error()) {
+    <div role="alert" class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-left text-sm text-red-800">
+      {{ error() }}
+    </div>
+    }
+    <article class="max-w-3xl text-gray-900" [appSpinUntil]="isLoading()">
+      @if (chapter(); as ch) {
+      <app-chapter-view [chapter]="ch"></app-chapter-view>
+      } @else if (!isLoading()) {
+      <p class="text-gray-500">Select a book and a chapter.</p>
+      }
+    </article>
+  </master-content>
+</app-page-concept-sidebar>
