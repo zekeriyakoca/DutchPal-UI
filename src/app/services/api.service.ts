@@ -6,15 +6,18 @@ import {
   ApiResponse,
   QuizResponse,
   VocabItem,
+  WordLookup,
   WordTranslation,
 } from '../models/apiResponse';
 import {
   ChatRequest,
+  ChatTurn,
   VocabRequest,
   TranslateRequest,
   SentencesRequest,
   QuizRequest,
   TranslateWordSimpleRequest,
+  WordLookupRequest,
 } from '../models/apiRequestModels';
 import { BootstrapData, Option } from '../models/bootstrap';
 import {
@@ -43,11 +46,19 @@ export class ApiService {
       );
   }
 
-  ask(prompt: string): Observable<string> {
-    const body: ChatRequest = { message: prompt };
+  ask(prompt: string, history: ChatTurn[]): Observable<string> {
+    const body: ChatRequest = { message: prompt, history };
     return this._httpClient
       .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body)
       .pipe(map((response) => response.response));
+  }
+
+  lookupWord(word: string): Observable<WordLookup> {
+    const body: WordLookupRequest = { word };
+    return this._httpClient.post<WordLookup>(
+      `${environment.apiUrl}/word/lookup`,
+      body
+    );
   }
 
   translateWordSimple(word: string): Observable<string> {
