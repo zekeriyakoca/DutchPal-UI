@@ -1,45 +1,24 @@
 .modal-container {
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  @apply fixed bottom-4 left-1/2 z-[1000] flex max-h-[80vh] w-[40rem] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-card border border-line bg-white text-left shadow-pop;
+  transition: opacity 0.4s ease, transform 0.4s ease;
   opacity: 0;
-  transform: translateY(50px);
-  position: fixed;
-  bottom: 20px; /* Position at the bottom */
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%) translateY(50px); /* Adjust for centering */
-  max-width: 92%; /* Limit maximum width */
-  max-height: 80vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  box-shadow: 0px 0px 8px 1px rgb(0 0 0 / 8%);
-  border-radius: 10px;
-  padding: 10px;
-  background-color: white;
-  z-index: 1000;
+  transform: translateX(-50%) translateY(50px);
 
   .modal-title {
-    text-align: left;
-    padding-left: 10px;
-    color: #e5bc46;
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0;
+    @apply block font-display text-base font-semibold text-accent-600;
   }
 
   .modal-text {
-    text-align: left;
-    margin: auto;
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #6b6200;
+    @apply overflow-y-auto px-5 py-4;
   }
 
   &.inVisible {
     opacity: 0;
-    transform: translateX(-50%) translateY(50px); /* Keep it hidden */
+    transform: translateX(-50%) translateY(50px);
   }
 
   &.visible {
     opacity: 1;
-    transform: translateX(-50%) translateY(0); /* Make it visible */
+    transform: translateX(-50%) translateY(0);
   }
 }

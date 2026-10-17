@@ -1,72 +1,87 @@
-<div class="bg-white">
-  <div class="relative isolate px-6 pt-14 lg:px-8">
-    <!-- Gradient background decoration (top) -->
-    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-      <div
-        class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-        style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
-      </div>
-    </div>
+<div class="relative isolate overflow-hidden">
+  <!-- Soft brand glow behind the hero -->
+  <div class="absolute inset-x-0 -top-40 -z-10 h-96 bg-gradient-to-b from-primary-100/70 via-accent-50/40 to-transparent blur-2xl"
+    aria-hidden="true"></div>
 
-    <!-- Centered Content -->
-    <div class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32 text-center">
-      <!-- Optional badge or announcement -->
-      <div class="hidden sm:mb-8 sm:flex sm:justify-center">
-        <div
-          class="relative rounded-full px-3 py-1 text-sm text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-          Fluent in Dutch (and dad jokes). <a href="#" class="font-semibold text-indigo-600">Give it a go <span
-              aria-hidden="true">&rarr;</span></a>
+  <div class="mx-auto max-w-3xl px-4 pb-8 sm:px-6" [class]="turns().length ? 'pt-8' : 'pt-12 sm:pt-20'">
+    <!-- Hero -->
+    <div class="text-center">
+      @if (!turns().length) {
+      <div class="mb-6 hidden sm:flex sm:justify-center">
+        <div class="rounded-full bg-white/70 px-3 py-1 text-sm text-ink-muted ring-1 ring-line">
+          Fluent in Dutch (and dad jokes).
+          <button type="button" class="font-semibold text-primary-600 hover:text-primary-700"
+            (click)="questionBox.focus()">Give it a go <span aria-hidden="true">&rarr;</span></button>
         </div>
       </div>
-
-      <!-- App Title -->
-      <h1 class="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl flex justify-center items-center gap-2">
-        🇳🇱 <span>Hallo Dutch!</span>
+      }
+      <h1 class="flex items-center justify-center gap-3 font-semibold tracking-tight text-ink"
+        [class]="turns().length ? 'text-2xl sm:text-3xl' : 'text-4xl sm:text-6xl'">
+        <span aria-hidden="true">🇳🇱</span> <span>Hallo Dutch!</span>
       </h1>
-
-      <!-- Subtitle -->
-      <p class="mt-8 text-lg text-gray-600 sm:text-xl">
+      @if (!turns().length) {
+      <p class="mx-auto mt-5 max-w-xl text-lg text-ink-muted">
         Stuck on grammar? Can’t remember ‘fiets’ or ‘lekker’? Don’t worry — I’ve got your back (in perfect Dutch).
       </p>
+      }
+    </div>
 
-      <!-- Input Section (static for now) -->
-      <div class="mt-10">
-        <label for="question" class="block mb-2 text-sm font-medium text-left text-gray-700">What’s on your
-          mind?</label>
-        <textarea id="question" rows="2" placeholder="e.g., What does ‘Ik hou van bitterballen’ mean?”"
-          [(ngModel)]="prompt" [ngClass]="{ 'invalid': questionRef.touched && questionRef.invalid }"
-          #questionRef="ngModel" (keydown.enter)="onEnter($event)" [readonly]="isLoading()"
-          class="w-full px-4 py-3 rounded-md border bg-gray-50 placeholder-gray-400 text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
-          style="border-color: rgba(55, 48, 163, 0.19);"></textarea>
-        <button [appDisabledUntil]="isLoading()"
-          class="mt-4 px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
-          (click)="askQuestion()">
-          Ask
-        </button>
-        @if (error()) {
-        <div role="alert" class="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-left text-sm text-red-800">
-          Couldn't get an answer. {{ error() }}
-          <button type="button" class="ml-1 font-semibold underline" (click)="askQuestion()">Try again</button>
+    <!-- Conversation -->
+    @if (turns().length || isLoading()) {
+    <div class="card mt-8 min-h-[8rem] p-5 sm:p-8" [appSpinUntil]="isLoading()" aria-live="polite">
+      <article appShowSelectionOptions class="prose max-w-none">
+        @for (turn of turns(); track $index) {
+        @if (turn.role === 'user') {
+        <p
+          class="my-3 ml-auto w-fit max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-primary-600 px-4 py-2.5 text-white">{{
+          turn.content }}</p>
+        } @else {
+        <div class="not-prose mb-1 mt-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-subtle">
+          <span class="size-1.5 rounded-full bg-accent-500" aria-hidden="true"></span> DutchPal
         </div>
+        <markdown class="custom-md" [data]="turn.content"></markdown>
+        }
+        }
+      </article>
+    </div>
+    }
+
+    <!-- Composer -->
+    <div class="card mt-6 p-4 sm:p-5" [class.sticky]="turns().length" [class.bottom-4]="turns().length">
+      <label for="question" class="field-label">What’s on your mind?</label>
+      <textarea id="question" rows="2" placeholder="e.g., What does ‘Ik hou van bitterballen’ mean?"
+        [(ngModel)]="prompt" [ngClass]="{ 'invalid': questionRef.touched && questionRef.invalid }"
+        #questionRef="ngModel" #questionBox (keydown.enter)="onEnter($event)" [readonly]="isLoading()"
+        class="field resize-y text-base"></textarea>
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <p class="hidden text-xs text-ink-subtle sm:block">
+          <kbd class="rounded border border-line bg-canvas px-1.5 py-0.5 font-sans">Enter</kbd> to send ·
+          <kbd class="rounded border border-line bg-canvas px-1.5 py-0.5 font-sans">Shift</kbd> +
+          <kbd class="rounded border border-line bg-canvas px-1.5 py-0.5 font-sans">Enter</kbd> for a new line
+        </p>
+        <button [appDisabledUntil]="isLoading()" class="btn-primary ml-auto" (click)="askQuestion()">
+          {{ isLoading() ? 'Thinking…' : 'Ask' }}
+        </button>
+      </div>
+      @if (error()) {
+      <div role="alert" class="alert-error mt-3">
+        Couldn't get an answer. {{ error() }}
+        <button type="button" class="ml-1 font-semibold underline" (click)="askQuestion()">Try again</button>
+      </div>
+      }
+    </div>
+
+    @if (!turns().length && !isLoading()) {
+    <div class="mt-6 text-center">
+      <p class="mb-3 text-sm text-ink-subtle">Try one of these</p>
+      <div class="flex flex-wrap justify-center gap-2">
+        @for (example of ['What does ‘gezellig’ mean?', 'When do I use ‘er’?', 'Is it de or het huis?', 'Explain the perfect tense']; track example) {
+        <button type="button"
+          class="rounded-full border border-line bg-white px-3.5 py-1.5 text-sm text-ink-muted transition-colors hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
+          (click)="prompt = example; questionBox.focus()">{{ example }}</button>
         }
       </div>
     </div>
-    <div class="py-8 px-4 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-7xl flex justify-center">
-        <div class="bg-white border-2 rounded-2xl p-6 py-12 w-full text-left"
-          style="border-color: rgba(55, 48, 163, 0.19);" [appSpinUntil]="isLoading()">
-          <article appShowSelectionOptions class="prose max-w-none">
-            @for (turn of turns(); track $index) {
-            @if (turn.role === 'user') {
-            <p class="my-2 ml-auto w-fit max-w-[80%] rounded-lg bg-indigo-50 px-4 py-2 text-indigo-950 whitespace-pre-wrap">{{
-              turn.content }}</p>
-            } @else {
-            <markdown class="custom-md" [data]="turn.content"></markdown>
-            }
-            }
-          </article>
-        </div>
-      </div>
-    </div>
+    }
   </div>
 </div>

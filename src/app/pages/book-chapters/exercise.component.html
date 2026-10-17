@@ -4,7 +4,7 @@
 <p>{{ex.instruction}}</p>
 }
 @if (playable() && ex.answers_source === 'generated_needs_review') {
-<p class="text-xs text-amber-700">These answers were generated, not printed in the book. They may need review.</p>
+<p class="rounded-control bg-warning-50 px-3 py-2 text-xs text-warning-800">These answers were generated, not printed in the book. They may need review.</p>
 }
 
 @if (ex.payload.text || ex.payload.source_text) {
@@ -17,7 +17,7 @@
 @if (ex.payload.options; as bank) {
 <div class="not-prose flex flex-wrap gap-2">
   @for (word of bank; track $index) {
-  <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700">{{word}}</span>
+  <span class="chip bg-canvas text-ink-muted ring-1 ring-line">{{word}}</span>
   }
 </div>
 }
@@ -25,7 +25,7 @@
   @for (item of items(); track $index; let i = $index) {
   <li [value]="item.n">
     @if (item.cue) {
-    <span class="text-gray-500">{{item.cue}}</span><br />
+    <span class="text-sm text-ink-subtle">{{item.cue}}</span><br />
     }
     @for (part of item.parts; track $index; let g = $index) {
     {{part}}
@@ -33,33 +33,33 @@
     @if (item.options) {
     @for (option of item.options; track option) {
     <button type="button" (click)="given[i][g] = option" [disabled]="!!results"
-      class="mx-0.5 px-2 py-0.5 rounded-md text-sm"
-      [class]="given[i][g] === option ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'">{{option}}</button>
+      class="mx-0.5 my-0.5 rounded-control px-2.5 py-0.5 text-sm font-medium transition-colors"
+      [class]="given[i][g] === option ? 'bg-primary-600 text-white' : 'bg-canvas text-ink ring-1 ring-line hover:bg-primary-50'">{{option}}</button>
     }
     } @else {
     <input [(ngModel)]="given[i][g]" [disabled]="!!results" (keyup.enter)="check()"
-      class="w-32 px-2 py-0.5 text-sm rounded-md border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      class="w-32 rounded-control border border-line bg-white px-2 py-0.5 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 disabled:bg-canvas" />
     }
     @if (results) {
     @if (results[i][g]) {
-    <span class="text-green-600">✓</span>
+    <span class="font-semibold text-success-600">✓</span>
     } @else {
-    <span class="text-red-600">✗ {{item.expected[g].split('|').join(' / ')}}</span>
+    <span class="text-danger-600">✗ {{item.expected[g].split('|').join(' / ')}}</span>
     }
     }
     }
     }
     @if (results && item.response) {
-    <br /><span class="text-gray-500">{{item.response}}</span>
+    <br /><span class="text-ink-muted">{{item.response}}</span>
     }
   </li>
   }
 </ol>
-<div class="not-prose flex items-center gap-3">
-  <button class="px-5 py-2 bg-indigo-600 text-white font-normal rounded-lg hover:bg-indigo-700 transition"
+<div class="not-prose mb-4 flex items-center gap-3">
+  <button [class]="results ? 'btn-secondary' : 'btn-primary'"
     (click)="results ? reset() : check()">{{results ? 'Opnieuw' : 'Controleer'}}</button>
   @if (results) {
-  <span class="text-sm text-gray-900">Score: {{score}}</span>
+  <span class="text-sm font-medium text-ink">Score: {{score}}</span>
   }
 </div>
 } @else if (!ex.payload.text && !ex.payload.source_text) {

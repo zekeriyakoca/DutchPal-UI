@@ -76,4 +76,16 @@ export class BookChaptersComponent {
       )
       .subscribe((chapter) => this.chapter.set(chapter));
   }
+
+  // The chapter before (-1) or after (+1) the selected one in this book.
+  adjacentChapter(offset: number): ChapterSummary | undefined {
+    const chapters = this.chapters();
+    const index = chapters.findIndex((c) => c.id === this.selectedChapter);
+    return index < 0 ? undefined : chapters[index + offset];
+  }
+
+  goToChapter(chapterId: number) {
+    this.setChapterSelected(chapterId);
+    window.scrollTo({ top: 0 });
+  }
 }
