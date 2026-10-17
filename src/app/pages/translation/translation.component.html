@@ -1,87 +1,88 @@
-<div class="bg-white">
-  <div class="relative isolate px-6 pt-14 lg:px-8">
+<div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+  <div class="text-center">
+    <h1 class="text-3xl font-semibold tracking-tight text-ink sm:text-4xl">Translation</h1>
+    <p class="mt-2 text-ink-muted">Look up a Dutch word, or translate a whole sentence.</p>
+  </div>
 
-    <!-- Centered Content -->
-    <div class="mx-auto max-w-2xl pt-4 pt-8 text-center">
-      <label class="inline-flex items-center cursor-pointer">
-        <input type="checkbox" class="sr-only peer" [ngModel]="isTextTranslation"
-          (ngModelChange)="setIsTextTranslation($event)">
-        <div
-          class="relative w-11 h-6 bg-pink-700 peer-checked:bg-indigo-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-        </div>
-        @if(isTextTranslation){
-        <span class="ms-3 text-md font-normal text-indigo-700 mr-3">TEXT</span>
-        }
-        @else{
-        <span class="ms-3 text-md font-normal text-pink-700">WORD</span>
-        }
-      </label>
-      <!-- Input Section (static for now) -->
-      <div class="mt-10">
-        <label for="question" class="block mb-2 text-sm font-medium text-left text-gray-700">Gimme the
-          {{isTextTranslation ? 'text' : 'word'}} to
-          translate?</label>
-        <input id="question" type="text" placeholder="e.g., {{isTextTranslation ? 'De moeite waard':'Geven'}}"
-          [(ngModel)]="prompt" [ngClass]="{ 'invalid': questionRef.touched && questionRef.invalid }"
-          #questionRef="ngModel"
-          class="w-full px-4 py-3 rounded-md border bg-gray-50 placeholder-gray-400 text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          style="border-color: rgba(55, 48, 163, 0.19);" />
-        <button [appDisabledUntil]="isLoading()"
-          class="mt-4 px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
-          (click)="translate()">
-          Translate
-        </button>
-        @if (error()) {
-        <div role="alert" class="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-left text-sm text-red-800">
-          Couldn't translate that. {{ error() }}
-          <button type="button" class="ml-1 font-semibold underline" (click)="translate()">Try again</button>
-        </div>
-        }
+  <div class="card mt-8 p-4 sm:p-6">
+    <div class="mb-5 flex justify-center">
+      <div class="segmented" role="group" aria-label="Translation mode">
+        <button type="button" [attr.aria-pressed]="!isTextTranslation" (click)="setIsTextTranslation(false)">Word</button>
+        <button type="button" [attr.aria-pressed]="isTextTranslation" (click)="setIsTextTranslation(true)">Text</button>
       </div>
     </div>
-    <div class="py-8 px-4 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-7xl flex justify-center">
-        <div class="bg-white border-0 rounded-2xl p-6 w-full text-center"
-          style="border-color: rgba(55, 48, 163, 0.19);" [appSpinUntil]="isLoading()">
-          <article appShowSelectionOptions class="prose max-w-none">
-            @if (word(); as word) {
-            <div class="mx-auto max-w-2xl text-left">
-              <div class="flex flex-wrap items-center gap-2">
-                <h2 class="!my-0">{{ word.article }} {{ word.lemma }}</h2>
-                @if (word.pos) {
-                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{{ word.pos }}</span>
-                }
-                @if (word.cefr_level) {
-                <span class="rounded bg-indigo-100 px-2 py-0.5 text-xs text-indigo-800">{{ word.cefr_level }}</span>
-                }
-                <span class="ml-auto text-xs text-gray-500">{{ sourceLabels[word.source] }}</span>
-              </div>
-              <p class="text-lg">{{ word.translations.join(', ') }}</p>
-              @if (word.forms.present || word.forms.v2 || word.forms.v3) {
-              <table>
-                <thead>
-                  <tr><th>Present</th><th>V2 (past)</th><th>V3 (perfect)</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>{{ word.forms.present }}</td><td>{{ word.forms.v2 }}</td><td>{{ word.forms.v3 }}</td></tr>
-                </tbody>
-              </table>
-              }
-              @if (word.examples.length) {
-              <h3>Examples <span class="text-xs font-normal text-gray-500">from AI</span></h3>
-              <ul>
-                @for (example of word.examples; track example) {
-                <li>{{ example }}</li>
-                }
-              </ul>
-              }
-            </div>
-            } @else {
-            <markdown class="custom-md" [data]="response()"></markdown>
-            }
-          </article>
-        </div>
-      </div>
+
+    <label for="question" class="field-label">Gimme the {{isTextTranslation ? 'text' : 'word'}} to translate?</label>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <input id="question" type="text" placeholder="e.g., {{isTextTranslation ? 'De moeite waard':'Geven'}}"
+        [(ngModel)]="prompt" [ngClass]="{ 'invalid': questionRef.touched && questionRef.invalid }"
+        #questionRef="ngModel" (keydown.enter)="translate()" class="field flex-1 text-base" />
+      <button [appDisabledUntil]="isLoading()" class="btn-primary sm:w-36" (click)="translate()">
+        {{ isLoading() ? 'Translating…' : 'Translate' }}
+      </button>
     </div>
+    @if (error()) {
+    <div role="alert" class="alert-error mt-4">
+      Couldn't translate that. {{ error() }}
+      <button type="button" class="ml-1 font-semibold underline" (click)="translate()">Try again</button>
+    </div>
+    }
+  </div>
+
+  <div class="card mt-6 min-h-[12rem] p-5 sm:p-8" [appSpinUntil]="isLoading()" aria-live="polite">
+    <article appShowSelectionOptions class="prose max-w-none">
+      @if (word(); as word) {
+      <div class="text-left">
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 class="!my-0 text-2xl">
+            @if (word.article) {<span class="font-normal text-ink-muted">{{ word.article }}</span>}
+            {{ word.lemma }}
+          </h2>
+          @if (word.pos) {
+          <span class="chip bg-canvas text-ink-muted ring-1 ring-line">{{ word.pos }}</span>
+          }
+          @if (word.cefr_level) {
+          <span class="chip bg-primary-50 text-primary-700">{{ word.cefr_level }}</span>
+          }
+          <span class="ml-auto text-xs text-ink-subtle">{{ sourceLabels[word.source] }}</span>
+        </div>
+        <p class="text-lg text-ink">{{ word.translations.join(', ') }}</p>
+        @if (word.forms.present || word.forms.v2 || word.forms.v3) {
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Present</th><th>V2 (past)</th><th>V3 (perfect)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>{{ word.forms.present }}</td><td>{{ word.forms.v2 }}</td><td>{{ word.forms.v3 }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        }
+        @if (word.examples.length) {
+        <h3>Examples <span class="text-xs font-normal text-ink-subtle">from AI</span></h3>
+        <ul>
+          @for (example of word.examples; track example) {
+          <li>{{ example }}</li>
+          }
+        </ul>
+        }
+      </div>
+      } @else if (response()) {
+      <markdown class="custom-md" [data]="response()"></markdown>
+      } @else if (!isLoading()) {
+      <div class="not-prose empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802" />
+        </svg>
+        <h2>Nothing translated yet</h2>
+        <p class="text-sm">
+          {{ isTextTranslation ? 'Paste a Dutch sentence above and press Enter.' : 'Type a Dutch word above and press Enter — you get its meaning, forms and examples.' }}
+        </p>
+      </div>
+      }
+    </article>
   </div>
 </div>

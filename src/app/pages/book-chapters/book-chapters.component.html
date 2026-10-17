@@ -1,10 +1,10 @@
-<app-page-concept-sidebar class="w-full">
+<app-page-concept-sidebar class="block w-full" title="Study Book"
+  subtitle="Read the chapters of your course book: dialogues, vocabulary, grammar and exercises.">
   <sidebar-menu>
     <div class="flex flex-col gap-4">
-      <div class="text-left flex-1">
-        <label for="book" class="block mb-1 text-sm font-normal text-gray-900">Select a book</label>
-        <select id="book" [ngModel]="selectedBook" (ngModelChange)="setBookSelected($event)" name="book"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+      <div>
+        <label for="book" class="field-label">Book</label>
+        <select id="book" [ngModel]="selectedBook" (ngModelChange)="setBookSelected($event)" name="book" class="field">
           <option value="" disabled>Select an Option</option>
           @for (book of books(); track book.book_id) {
           <option [value]="book.book_id">{{book.title}}{{book.cefr ? ' (' + book.cefr + ')' : ''}}</option>
@@ -12,10 +12,10 @@
         </select>
       </div>
       @if (chapters().length) {
-      <div class="text-left flex-1">
-        <label for="chapter" class="block mb-1 text-sm font-normal text-gray-900">Select a chapter</label>
+      <div>
+        <label for="chapter" class="field-label">Chapter</label>
         <select id="chapter" [ngModel]="selectedChapter" (ngModelChange)="setChapterSelected($event)" name="chapter"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+          class="field">
           @for (item of chapters(); track item.id) {
           <option [ngValue]="item.id">{{item.number}}. {{item.title}}</option>
           }
@@ -25,41 +25,48 @@
     </div>
   </sidebar-menu>
   <master-content>
-    <article class="prose max-w-none" [appSpinUntil]="isLoading()">
+    <article class="prose mx-auto min-h-[16rem] max-w-reading rounded-control prose-headings:scroll-mt-24"
+      [appSpinUntil]="isLoading()">
       <div appShowSelectionOptions>
         @if (chapter(); as ch) {
-        <h1>{{ch.number}}. {{ch.title}}</h1>
-        <p class="text-sm text-gray-500">
+        <p class="not-prose text-sm font-medium text-accent-600">
           {{ch.book_title}}
-          @if (ch.book_pages) { · p. {{ch.book_pages[0]}}–{{ch.book_pages[1]}} }
+          @if (ch.book_pages) { <span class="text-ink-subtle">· p. {{ch.book_pages[0]}}–{{ch.book_pages[1]}}</span> }
         </p>
+        <h1 class="!mb-3 !mt-1 text-3xl">{{ch.number}}. {{ch.title}}</h1>
         @if (ch.note) {
-        <p class="text-sm italic text-gray-500">{{ch.note}}</p>
+        <p class="text-sm italic text-ink-muted">{{ch.note}}</p>
         }
         @if (ch.goals.length) {
-        <ul>
-          @for (goal of ch.goals; track $index) {
-          <li>{{goal}}</li>
-          }
-        </ul>
+        <div class="not-prose my-6 rounded-card bg-primary-50/70 p-5">
+          <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-700">In this chapter</p>
+          <ul class="space-y-1.5 text-ink">
+            @for (goal of ch.goals; track $index) {
+            <li class="flex gap-2"><span class="text-primary-500" aria-hidden="true">✓</span>{{goal}}</li>
+            }
+          </ul>
+        </div>
         }
 
         @for (dialogue of ch.dialogues; track dialogue.id) {
         <h2>{{dialogue.title || 'Dialoog'}}</h2>
-        @for (line of dialogue.lines; track $index) {
-        @if (line.narration) {
-        <p>{{line.text}}</p>
-        } @else {
-        <p class="my-1" [class.italic]="line.stage">
-          @if (line.speaker) {<strong>{{line.speaker}}:</strong>}
-          {{line.text}}
-        </p>
-        }
-        }
+        <div class="not-prose rounded-card border border-line bg-canvas/50 px-5 py-4 leading-relaxed text-ink sm:px-6">
+          @for (line of dialogue.lines; track $index) {
+          @if (line.narration) {
+          <p class="my-2 text-ink-muted">{{line.text}}</p>
+          } @else {
+          <p class="my-1.5" [class.italic]="line.stage" [class.text-ink-muted]="line.stage">
+            @if (line.speaker) {<strong class="font-semibold text-primary-800">{{line.speaker}}:</strong>}
+            {{line.text}}
+          </p>
+          }
+          }
+        </div>
         @if (dialogue.new_words.length) {
-        <div class="not-prose flex flex-wrap gap-2 mt-4">
+        <div class="not-prose mt-4 flex flex-wrap items-center gap-2">
+          <span class="text-xs font-medium text-ink-subtle">New words</span>
           @for (word of dialogue.new_words; track $index) {
-          <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-50 text-indigo-700">{{word}}</span>
+          <span class="chip bg-accent-50 text-accent-700 ring-1 ring-accent-100">{{word}}</span>
           }
         </div>
         }
@@ -72,19 +79,21 @@
         @if (list.list) {
         <h3>{{list.list}}</h3>
         }
-        <table>
-          <tbody>
-            @for (item of list.items; track $index) {
-            <tr>
-              <td>
-                @if (item.article && !item.nl.startsWith(item.article + ' ')) { {{item.article}} }
-                {{item.nl}}
-              </td>
-              <td>{{item.en}}</td>
-            </tr>
-            }
-          </tbody>
-        </table>
+        <div class="table-scroll">
+          <table>
+            <tbody>
+              @for (item of list.items; track $index) {
+              <tr>
+                <td class="font-medium">
+                  @if (item.article && !item.nl.startsWith(item.article + ' ')) { {{item.article}} }
+                  {{item.nl}}
+                </td>
+                <td class="text-ink-muted">{{item.en}}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
         }
 
         @if (ch.grammar.length) {
@@ -93,36 +102,40 @@
         @for (topic of ch.grammar; track topic.id) {
         <h3>{{topic.title}}</h3>
         @if (topic.content.table; as table) {
-        <table>
-          <thead>
-            <tr>
-              @for (column of table.columns; track $index) {
-              <th>{{column}}</th>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                @for (column of table.columns; track $index) {
+                <th>{{column}}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of table.rows; track $index) {
+              <tr>
+                @for (cell of row; track $index) {
+                <td>{{cell}}</td>
+                }
+              </tr>
               }
-            </tr>
-          </thead>
-          <tbody>
-            @for (row of table.rows; track $index) {
-            <tr>
-              @for (cell of row; track $index) {
-              <td>{{cell}}</td>
-              }
-            </tr>
-            }
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
         }
         @if (topic.content.pairs; as pairs) {
-        <table>
-          <tbody>
-            @for (pair of pairs; track $index) {
-            <tr>
-              <td>{{pair.q}}</td>
-              <td>{{pair.a}}</td>
-            </tr>
-            }
-          </tbody>
-        </table>
+        <div class="table-scroll">
+          <table>
+            <tbody>
+              @for (pair of pairs; track $index) {
+              <tr>
+                <td>{{pair.q}}</td>
+                <td>{{pair.a}}</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
         }
         @for (list of [topic.content.examples, topic.content.phrases]; track $index) {
         @if (list) {
@@ -134,7 +147,7 @@
         }
         }
         @if (topic.content.note) {
-        <p>{{topic.content.note}}</p>
+        <p class="rounded-control bg-canvas px-4 py-3 text-sm">{{topic.content.note}}</p>
         }
         }
 
@@ -142,15 +155,17 @@
         <h2>Exercises</h2>
         }
         @for (exercise of ch.exercises; track exercise.id) {
-        <app-exercise [exercise]="exercise" />
+        <section class="my-5 rounded-card border border-line px-5 py-1 [&_h3]:!mt-4">
+          <app-exercise [exercise]="exercise" />
+        </section>
         }
 
         @for (box of ch.culture; track $index) {
-        <div class="border-l-4 border-indigo-200 pl-4 my-6">
+        <div class="not-prose my-8 rounded-card border-l-4 border-accent-400 bg-accent-50/60 px-5 py-4">
           @if (box.title) {
-          <h3 class="mt-0">{{box.title}}</h3>
+          <h3 class="mb-1 font-display text-lg font-semibold text-ink">{{box.title}}</h3>
           }
-          <p class="whitespace-pre-line">{{box.text}}</p>
+          <p class="whitespace-pre-line leading-relaxed text-ink">{{box.text}}</p>
         </div>
         }
 
@@ -162,6 +177,32 @@
           }
         </ul>
         }
+
+        @if (adjacentChapter(-1) || adjacentChapter(1)) {
+        <nav class="not-prose mt-10 flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:justify-between"
+          aria-label="Chapters">
+          @if (adjacentChapter(-1); as prev) {
+          <button type="button" class="btn-secondary justify-start text-left" (click)="goToChapter(prev.id)">
+            <span aria-hidden="true">&larr;</span> {{prev.number}}. {{prev.title}}
+          </button>
+          } @else { <span></span> }
+          @if (adjacentChapter(1); as next) {
+          <button type="button" class="btn-secondary justify-end text-right" (click)="goToChapter(next.id)">
+            {{next.number}}. {{next.title}} <span aria-hidden="true">&rarr;</span>
+          </button>
+          }
+        </nav>
+        }
+        } @else if (!isLoading()) {
+        <div class="not-prose empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          </svg>
+          <h2>Pick a book to start reading</h2>
+          <p class="text-sm">Choose a book and a chapter from the options. Select any text to translate or explain it.</p>
+        </div>
         }
       </div>
     </article>

@@ -48,8 +48,9 @@ export class SpinUntilDirective implements OnChanges {
     this.renderer.setStyle(
       spinnerWrapper,
       'backgroundColor',
-      'rgba(255, 255, 255, 0.6)'
+      'rgba(255, 255, 255, 0.7)'
     );
+    this.renderer.setStyle(spinnerWrapper, 'borderRadius', 'inherit');
     this.renderer.setStyle(spinnerWrapper, 'zIndex', '10');
 
     const spinner = this.renderer.createElement('div');
@@ -58,8 +59,8 @@ export class SpinUntilDirective implements OnChanges {
       'innerHTML',
       `
         <svg
-          class="animate-spin text-indigo-600"
-          style="height: 3rem; width: 3rem;"
+          class="animate-spin text-primary-600"
+          style="height: 2.5rem; width: 2.5rem;"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

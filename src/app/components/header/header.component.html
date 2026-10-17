@@ -1,74 +1,51 @@
-<header class="absolute inset-x-0 top-0 z-50">
-  <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
-    <div class="flex lg:flex-1">
-      <a href="#" class="-m-1.5 p-1.5">
-        <span class="sr-only">Dutch Pal</span>
-        <img class="h-8 w-auto scale-[1.9] ml-[20px]" src="assets/logo.svg">
-      </a>
+<header class="border-b border-line bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/75">
+  <nav class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8"
+    aria-label="Global">
+    <a routerLink="/" class="-m-1.5 flex shrink-0 items-center rounded-control p-1.5">
+      <span class="sr-only">DutchPal home</span>
+      <img class="h-10 w-auto" src="assets/logo.svg" alt="" />
+    </a>
+
+    <div class="hidden items-center gap-1 lg:flex">
+      @for (link of links; track link.path) {
+      <a [routerLink]="link.path" routerLinkActive="!bg-primary-50 !text-primary-700" ariaCurrentWhenActive="page"
+        class="rounded-control px-3.5 py-2 text-sm font-medium text-ink-muted transition-colors hover:bg-canvas hover:text-ink">{{
+        link.label }}</a>
+      }
     </div>
-    <div class="flex lg:hidden">
-      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
-        (click)="isMobileMenuOpen.set(true)">
-        <span class="sr-only">Open main menu</span>
-        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
-          data-slot="icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
+
+    <div class="hidden lg:flex lg:w-32 lg:justify-end">
+      <a href="#" class="rounded-control px-3 py-2 text-sm font-semibold text-ink-muted hover:text-ink">Log in <span
+          aria-hidden="true">&rarr;</span></a>
     </div>
-    <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/chat" class="text-md font-normal text-gray-900">Chat</a>
-      <a href="/translation" class="text-md font-normal text-gray-900">Translation</a>
-      <a href="/vocab-game" class="text-md font-normal text-gray-900">Vocab Game</a>
-      <a href="/quiz" class="text-md font-normal text-gray-900">Practice</a>
-      <a href="/study-book" class="text-md font-normal text-gray-900">Study book</a>
-    </div>
-    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      <a href="#" class="text-sm/6 font-semibold text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
-    </div>
+
+    <button type="button"
+      class="-mr-2 inline-flex items-center justify-center rounded-control p-2.5 text-ink hover:bg-canvas lg:hidden"
+      [attr.aria-expanded]="isMobileMenuOpen()" aria-controls="mobile-menu"
+      (click)="isMobileMenuOpen.set(!isMobileMenuOpen())">
+      <span class="sr-only">{{ isMobileMenuOpen() ? 'Close' : 'Open' }} main menu</span>
+      <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+        @if (isMobileMenuOpen()) {
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        } @else {
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        }
+      </svg>
+    </button>
   </nav>
-  @if(isMobileMenuOpen()){
-  <!-- Mobile menu, show/hide based on menu open state. -->
-  <div class="lg:hidden" role="dialog" aria-modal="true">
-    <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0 z-50"></div>
-    <div
-      class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-      <div class="flex items-center justify-between">
-        <a href="#" class="-m-1.5 p-1.5">
-          <span class="sr-only">Dutch Pal</span>
-          <img class="h-16 w-auto" src="assets/logo.svg" alt="">
-        </a>
-        <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" (click)="isMobileMenuOpen.set(false)">
-          <span class="sr-only">Close menu</span>
-          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-            aria-hidden="true" data-slot="icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="mt-6 flow-root">
-        <div class="-my-6 divide-y divide-gray-500/10">
-          <div class="space-y-2 py-6">
-            <a href="/chat"
-              class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Chat</a>
-            <a href="/quiz"
-              class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Quiz</a>
-            <a href="/translation"
-              class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Translation</a>
-            <a href="/vocab-game"
-              class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Vocab
-              Game</a>
-          </div>
-          <div class="py-6">
-            <a href="#"
-              class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Log
-              in</a>
-          </div>
-        </div>
-      </div>
+
+  @if (isMobileMenuOpen()) {
+  <div id="mobile-menu" class="border-t border-line bg-white px-4 pb-4 pt-2 shadow-pop lg:hidden"
+    (keydown.escape)="isMobileMenuOpen.set(false)">
+    @for (link of links; track link.path) {
+    <a [routerLink]="link.path" routerLinkActive="!bg-primary-50 !text-primary-700" ariaCurrentWhenActive="page"
+      (click)="isMobileMenuOpen.set(false)"
+      class="block rounded-control px-3 py-2.5 text-base font-medium text-ink hover:bg-canvas">{{ link.label }}</a>
+    }
+    <div class="mt-2 border-t border-line pt-2">
+      <a href="#" class="block rounded-control px-3 py-2.5 text-base font-medium text-ink-muted hover:bg-canvas">Log
+        in</a>
     </div>
   </div>
   }
-
 </header>
