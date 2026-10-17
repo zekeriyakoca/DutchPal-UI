@@ -42,8 +42,6 @@ export interface QuizQuestion {
   explanation?: string | null;
 }
 
-// PARAGRAPH quizzes come from stored open questions and are still markdown (`response`).
 export interface QuizResponse {
-  questions?: QuizQuestion[];
-  response?: string;
+  questions: QuizQuestion[];
 }

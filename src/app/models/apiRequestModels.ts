@@ -14,7 +14,7 @@ export interface VocabRequest {
   message?: string;
   level?: string;
   number_of_entries?: number;
-  book_id?: number;
+  book_id?: string;
   word_type?: string;
 }
 
@@ -33,19 +33,12 @@ export interface WordLookupRequest {
   word: string;
 }
 
-// Used by /sentences
-export interface SentencesRequest {
-  level?: string;
-  number_of_entries?: number;
-  book_id?: number;
-}
-
 // Used by /quiz
 export interface QuizRequest {
   message?: string;
   level?: string;
   difficulty?: number;
   number_of_entries?: number;
-  book_id?: number;
-  quiz_type: 'MIXED' | 'PARAGRAPH' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
+  book_id?: string;
+  quiz_type: 'MIXED' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
 }

@@ -14,7 +14,6 @@ import {
   ChatTurn,
   VocabRequest,
   TranslateRequest,
-  SentencesRequest,
   QuizRequest,
   TranslateWordSimpleRequest,
   WordLookupRequest,
@@ -98,7 +97,7 @@ export class ApiService {
   getVocabulary(
     level: string,
     numberOfEntries: number,
-    bookId: number,
+    bookId: string,
     wordType: string
   ): Observable<VocabItem[]> {
     const body: VocabRequest = {
@@ -113,26 +112,11 @@ export class ApiService {
       .pipe(map((response) => response.items));
   }
 
-  getSentences(
-    level: string,
-    numberOfEntries: number,
-    bookId: number
-  ): Observable<string> {
-    const body: SentencesRequest = {
-      level,
-      number_of_entries: numberOfEntries,
-      book_id: bookId,
-    };
-    return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/sentences`, body)
-      .pipe(map((response) => response.response));
-  }
-
   generateQuiz(
     cefr: string,
     difficulty: number,
     numberOfEntries: number,
-    bookId: number,
+    bookId: string,
     selectedQuizType: QuizRequest['quiz_type']
   ): Observable<QuizResponse> {
     const body: QuizRequest = {

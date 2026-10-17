@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 
 type PreferenceKey =
   | 'translation.isTextTranslation'
-  | 'vocab-game.isSentenceGame'
   | 'vocab-game.selectedLevel'
-  | 'vocab-game.selectedBook'
+  | 'vocab-game.bookId'
   | 'vocab-game.selectedWordType'
   | 'vocab-game.itemCount'
   | 'quiz.level'
   | 'quiz.difficulty'
-  | 'quiz.book'
+  | 'quiz.bookId'
   | 'quiz.quizType'
   | 'quiz.itemCount'
   | 'study-book.selectedBookId'
@@ -20,20 +19,14 @@ type PreferenceKey =
 
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
-  'vocab-game.isSentenceGame': boolean;
   'vocab-game.selectedLevel': string;
-  'vocab-game.selectedBook': number;
+  'vocab-game.bookId': string;
   'vocab-game.selectedWordType': string;
   'vocab-game.itemCount': number;
   'quiz.level': string;
   'quiz.difficulty': number;
-  'quiz.book': number;
-  'quiz.quizType':
-    | 'MIXED'
-    | 'PARAGRAPH'
-    | 'VOCABULARY'
-    | 'TRANSLATION'
-    | 'GRAMMAR';
+  'quiz.bookId': string;
+  'quiz.quizType': 'MIXED' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
   'quiz.itemCount': number;
   'study-book.selectedBookId': number;
   'study-book.selectedChapterId': number;

@@ -1,5 +1,5 @@
 export interface Option {
-  id: number;
+  id: string; // content book slug, e.g. "nl-in-gang"
   name: string;
 }
 
