@@ -9,6 +9,7 @@ import { PageConceptSidebarComponent } from '../../components/page-concept-sideb
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Option } from '../../models/bootstrap';
+import { VocabItem } from '../../models/apiResponse';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
@@ -31,6 +32,11 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
 export class VocabGameComponent {
   isSentenceGame = false;
   response = signal('');
+  words = signal<VocabItem[] | null>(null);
+  isCardMode = signal(false);
+  cardIndex = signal(0);
+  isRevealed = signal(false);
+  knownCount = signal(0);
   selectedLevel = 'ALL LEVELS';
   selectedBook = 0;
   selectedWordType = signal('VERB');
@@ -63,6 +69,7 @@ export class VocabGameComponent {
         .pipe(first())
         .subscribe({
           next: (response) => {
+            this.words.set(null);
             this.response.set(response);
           },
           error: (err) => {
@@ -82,8 +89,9 @@ export class VocabGameComponent {
         )
         .pipe(first())
         .subscribe({
-          next: (response) => {
-            this.response.set(response);
+          next: (words) => {
+            this.words.set(words);
+            this.restartCards();
           },
           error: (err) => {
             console.error('Unable to fetch vocabulary:', err);
@@ -93,6 +101,37 @@ export class VocabGameComponent {
           },
         });
     }
+  }
+
+  answerCard(known: boolean) {
+    if (known) this.knownCount.update((n) => n + 1);
+    this.cardIndex.update((i) => i + 1);
+    this.isRevealed.set(false);
+  }
+
+  restartCards() {
+    this.cardIndex.set(0);
+    this.knownCount.set(0);
+    this.isRevealed.set(false);
+  }
+
+  // Splits an example into parts; odd indexes are forms of the word, shown bold.
+  exampleParts(item: VocabItem, example: string): string[] {
+    const forms = [
+      item.word,
+      item.lemma,
+      item.present_form,
+      item.v2_form,
+      item.v3_form,
+    ]
+      .flatMap((form) => form?.split('/') ?? [])
+      .map((form) => form.trim())
+      .filter((form) => form.length > 1)
+      .map((form) => form.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    if (!forms.length) return [example];
+    return example.split(
+      new RegExp(`(?<!\\p{L})(${forms.join('|')})(?!\\p{L})`, 'iu')
+    );
   }
 
   private retrieveUserPreferences() {

@@ -51,7 +51,7 @@ export class TranslationComponent {
         });
     } else {
       this.apiService
-        .translateWord(this.prompt)
+        .translateWordSimple(this.prompt)
         .pipe(first())
         .subscribe((response) => {
           this.response.set(response);

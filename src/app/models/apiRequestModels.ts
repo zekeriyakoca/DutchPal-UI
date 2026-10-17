@@ -3,7 +3,7 @@ export interface ChatRequest {
   message: string;
 }
 
-// Used by /vocabulary (translateWord + getVocabulary)
+// Used by /vocabulary (getVocabulary)
 export interface VocabRequest {
   message?: string;
   level?: string;

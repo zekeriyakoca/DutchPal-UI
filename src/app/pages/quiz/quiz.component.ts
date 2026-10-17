@@ -1,4 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  CUSTOM_ELEMENTS_SCHEMA,
+  signal,
+} from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { first } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -8,6 +13,7 @@ import { PageConceptSidebarComponent } from '../../components/page-concept-sideb
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { Option } from '../../models/bootstrap';
+import { QuizQuestion } from '../../models/apiResponse';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 
@@ -29,6 +35,15 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
 })
 export class QuizComponent {
   response = signal('');
+  questions = signal<QuizQuestion[] | null>(null);
+  // Chosen option per question; null until answered.
+  choices = signal<(string | null)[]>([]);
+  score = computed(
+    () =>
+      this.questions()?.filter((q, i) => this.choices()[i] === q.answer)
+        .length ?? 0
+  );
+  isFinished = computed(() => this.choices().every((c) => c !== null));
   selectedLevel = 'ALL LEVELS';
   selectedDifficultyLevel = 5;
   selectedBook = 0;
@@ -69,7 +84,9 @@ export class QuizComponent {
       .pipe(first())
       .subscribe({
         next: (response) => {
-          this.response.set(response);
+          this.response.set(response.response ?? '');
+          this.questions.set(response.questions ?? null);
+          this.restart();
         },
         error: (err) => {
           console.error('Quiz generation failed:', err);
@@ -79,6 +96,16 @@ export class QuizComponent {
         },
       });
   }
+  choose(index: number, option: string) {
+    this.choices.update((choices) =>
+      choices.map((c, i) => (i === index ? option : c))
+    );
+  }
+
+  restart() {
+    this.choices.set((this.questions() ?? []).map(() => null));
+  }
+
   retrieveUserPreferences() {
     this.selectedLevel = this.userPreferences.get('quiz.level', 'ALL LEVELS');
     this.selectedDifficultyLevel = this.userPreferences.get(

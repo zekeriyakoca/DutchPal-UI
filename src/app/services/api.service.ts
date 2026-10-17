@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ApiResponse, WordTranslation } from '../models/apiResponse';
+import {
+  ApiResponse,
+  QuizResponse,
+  VocabItem,
+  WordTranslation,
+} from '../models/apiResponse';
 import {
   ChatRequest,
   VocabRequest,
@@ -37,16 +42,6 @@ export class ApiService {
     const body: ChatRequest = { message: prompt };
     return this._httpClient
       .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body)
-      .pipe(map((response) => response.response));
-  }
-
-  translateWord(word: string): Observable<string> {
-    const body: VocabRequest = {
-      message: word,
-      number_of_entries: 1,
-    };
-    return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/vocabulary`, body)
       .pipe(map((response) => response.response));
   }
 
@@ -94,7 +89,7 @@ export class ApiService {
     numberOfEntries: number,
     bookId: number,
     wordType: string
-  ): Observable<string> {
+  ): Observable<VocabItem[]> {
     const body: VocabRequest = {
       message: '',
       level,
@@ -103,8 +98,8 @@ export class ApiService {
       word_type: wordType,
     };
     return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/vocabulary`, body)
-      .pipe(map((response) => response.response));
+      .post<{ items: VocabItem[] }>(`${environment.apiUrl}/vocabulary`, body)
+      .pipe(map((response) => response.items));
   }
 
   getSentences(
@@ -128,7 +123,7 @@ export class ApiService {
     numberOfEntries: number,
     bookId: number,
     selectedQuizType: QuizRequest['quiz_type']
-  ): Observable<string> {
+  ): Observable<QuizResponse> {
     const body: QuizRequest = {
       message: '',
       level: cefr,
@@ -137,9 +132,10 @@ export class ApiService {
       book_id: bookId,
       quiz_type: selectedQuizType,
     };
-    return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/quiz`, body)
-      .pipe(map((response) => response.response));
+    return this._httpClient.post<QuizResponse>(
+      `${environment.apiUrl}/quiz`,
+      body
+    );
   }
 
   getSectionNamesOfBook(bookId: number): Observable<Option[]> {

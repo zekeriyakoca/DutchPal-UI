@@ -60,7 +60,44 @@
   </sidebar-menu>
   <master-content>
     <article class="prose max-w-none" [appSpinUntil]="isLoading()">
+      @if (questions(); as questions) {
+      <div appShowSelectionOptions class="custom-md">
+        @for (q of questions; track $index; let i = $index) {
+        <div class="mb-8">
+          <p class="font-semibold text-indigo-950">{{ i + 1 }}. {{ q.question }}</p>
+          <div class="flex flex-col gap-2">
+            @for (option of q.options; track $index) {
+            <button class="text-left px-4 py-2 rounded-md border transition" [disabled]="choices()[i] !== null"
+              [ngClass]="choices()[i] === null ? 'border-gray-300 hover:bg-indigo-50'
+                : option === q.answer ? 'border-green-600 bg-green-50 text-green-800'
+                : option === choices()[i] ? 'border-pink-700 bg-pink-50 text-pink-800'
+                : 'border-gray-200 text-gray-400'"
+              (click)="choose(i, option)">{{ option }}</button>
+            }
+          </div>
+          @if (choices()[i] !== null) {
+          <p [class]="choices()[i] === q.answer ? 'text-green-700' : 'text-pink-700'">
+            {{ choices()[i] === q.answer ? 'Goed!' : 'Fout. Het antwoord is: ' + q.answer }}
+          </p>
+          @if (q.explanation) {
+          <p class="text-gray-600">{{ q.explanation }}</p>
+          }
+          }
+        </div>
+        } @empty {
+        <p>No questions could be generated. Please try again.</p>
+        }
+        @if (questions.length && isFinished()) {
+        <div>
+          <p class="text-2xl font-semibold text-indigo-950">Score {{ score() }} / {{ questions.length }}</p>
+          <button class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            (click)="restart()">Opnieuw</button>
+        </div>
+        }
+      </div>
+      } @else {
       <markdown appShowSelectionOptions class="custom-md" [data]="response()"></markdown>
+      }
     </article>
   </master-content>
 </app-page-concept-sidebar>
