@@ -2,14 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { ApiResponse, WordTranslation } from '../models/apiResponse';
+import {
+  ApiResponse,
+  WordLookup,
+  WordTranslation,
+} from '../models/apiResponse';
 import {
   ChatRequest,
+  ChatTurn,
   VocabRequest,
   TranslateRequest,
   SentencesRequest,
   QuizRequest,
   TranslateWordSimpleRequest,
+  WordLookupRequest,
 } from '../models/apiRequestModels';
 import { BootstrapData, Option } from '../models/bootstrap';
 import {
@@ -33,21 +39,19 @@ export class ApiService {
       );
   }
 
-  ask(prompt: string): Observable<string> {
-    const body: ChatRequest = { message: prompt };
+  ask(prompt: string, history: ChatTurn[]): Observable<string> {
+    const body: ChatRequest = { message: prompt, history };
     return this._httpClient
       .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body)
       .pipe(map((response) => response.response));
   }
 
-  translateWord(word: string): Observable<string> {
-    const body: VocabRequest = {
-      message: word,
-      number_of_entries: 1,
-    };
-    return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/vocabulary`, body)
-      .pipe(map((response) => response.response));
+  lookupWord(word: string): Observable<WordLookup> {
+    const body: WordLookupRequest = { word };
+    return this._httpClient.post<WordLookup>(
+      `${environment.apiUrl}/word/lookup`,
+      body
+    );
   }
 
   translateWordSimple(word: string): Observable<string> {

@@ -26,18 +26,59 @@
           #questionRef="ngModel"
           class="w-full px-4 py-3 rounded-md border bg-gray-50 placeholder-gray-400 text-indigo-950 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           style="border-color: rgba(55, 48, 163, 0.19);" />
-        <button class="mt-4 px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
+        <button [appDisabledUntil]="isLoading()"
+          class="mt-4 px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
           (click)="translate()">
           Translate
         </button>
+        @if (error()) {
+        <div role="alert" class="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-left text-sm text-red-800">
+          Couldn't translate that. {{ error() }}
+          <button type="button" class="ml-1 font-semibold underline" (click)="translate()">Try again</button>
+        </div>
+        }
       </div>
     </div>
     <div class="py-8 px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-7xl flex justify-center">
         <div class="bg-white border-0 rounded-2xl p-6 w-full text-center"
-          style="border-color: rgba(55, 48, 163, 0.19);">
-          <article class="prose max-w-none">
-            <markdown appShowSelectionOptions class="custom-md" [data]="response()"></markdown>
+          style="border-color: rgba(55, 48, 163, 0.19);" [appSpinUntil]="isLoading()">
+          <article appShowSelectionOptions class="prose max-w-none">
+            @if (word(); as word) {
+            <div class="mx-auto max-w-2xl text-left">
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="!my-0">{{ word.article }} {{ word.lemma }}</h2>
+                @if (word.pos) {
+                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{{ word.pos }}</span>
+                }
+                @if (word.cefr_level) {
+                <span class="rounded bg-indigo-100 px-2 py-0.5 text-xs text-indigo-800">{{ word.cefr_level }}</span>
+                }
+                <span class="ml-auto text-xs text-gray-500">{{ sourceLabels[word.source] }}</span>
+              </div>
+              <p class="text-lg">{{ word.translations.join(', ') }}</p>
+              @if (word.forms.present || word.forms.v2 || word.forms.v3) {
+              <table>
+                <thead>
+                  <tr><th>Present</th><th>V2 (past)</th><th>V3 (perfect)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>{{ word.forms.present }}</td><td>{{ word.forms.v2 }}</td><td>{{ word.forms.v3 }}</td></tr>
+                </tbody>
+              </table>
+              }
+              @if (word.examples.length) {
+              <h3>Examples <span class="text-xs font-normal text-gray-500">from AI</span></h3>
+              <ul>
+                @for (example of word.examples; track example) {
+                <li>{{ example }}</li>
+                }
+              </ul>
+              }
+            </div>
+            } @else {
+            <markdown class="custom-md" [data]="response()"></markdown>
+            }
           </article>
         </div>
       </div>
