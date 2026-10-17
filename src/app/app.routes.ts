@@ -22,5 +22,22 @@ export const routes: Routes = [
     path: 'settings',
     loadComponent: () =>
       import('./pages/settings/settings.component').then((m) => m.SettingsComponent),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/settings/general-settings.component').then((m) => m.GeneralSettingsComponent),
+      },
+      {
+        path: 'integrations',
+        loadComponent: () =>
+          import('./pages/settings/integrations.component').then((m) => m.IntegrationsComponent),
+      },
+      {
+        path: 'integrations/notion',
+        loadComponent: () =>
+          import('./pages/settings/notion-settings.component').then((m) => m.NotionSettingsComponent),
+      },
+    ],
   },
 ];
