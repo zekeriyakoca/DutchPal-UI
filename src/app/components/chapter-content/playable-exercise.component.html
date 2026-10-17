@@ -1,0 +1,77 @@
+@if (bank().length) {
+<div class="mt-2 flex flex-wrap gap-1.5">
+  @for (word of bank(); track $index) {
+  <span class="word-bank-chip rounded-full bg-gray-100 px-2 py-0.5 text-sm text-gray-700">{{ word }}</span>
+  }
+</div>
+}
+
+<ol class="mt-3 flex flex-col gap-2 text-sm text-gray-800">
+  @for (item of fillItems(); track $index; let i = $index) {
+  <li class="exercise-item flex gap-2">
+    <span class="w-5 shrink-0 text-right text-gray-500">{{ item.n }}.</span>
+    <div class="leading-8">
+      @if (item.cue) {<span class="mr-1 text-gray-500">({{ item.cue }})</span>}
+      @for (segment of item.segments; track $index; let g = $index, last = $last) {
+      <span class="whitespace-pre-wrap">{{ segment }}</span>
+      @if (!last) {
+      @let ok = fillResults()[i][g];
+      <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+        class="gap-input mx-0.5 rounded border px-1.5 py-0.5 align-baseline focus:outline-none focus:ring-2 focus:ring-primary-300"
+        [class.border-gray-300]="!checked()"
+        [class.is-correct]="checked() && ok" [class.border-green-500]="checked() && ok" [class.bg-green-50]="checked() && ok"
+        [class.is-wrong]="checked() && !ok" [class.border-red-500]="checked() && !ok" [class.bg-red-50]="checked() && !ok"
+        [style.width.ch]="gapWidth(item.answers[g])" [readOnly]="checked()"
+        [attr.aria-label]="'Item ' + item.n + ', gap ' + (g + 1)"
+        [value]="typed()[i + '-' + g] ?? ''" (input)="setGap(i, g, $any($event.target).value)"
+        (keydown.enter)="check()" />
+      @if (checked() && !ok) {
+      <span class="expected-answer mr-1 font-medium text-green-700">{{ primaryAnswer(item.answers[g]) }}</span>
+      }
+      }
+      }
+      @if (checked() && item.response) {
+      <span class="block text-gray-500">{{ item.response }}</span>
+      }
+    </div>
+  </li>
+  }
+
+  @for (item of chooseItems(); track $index; let i = $index) {
+  @let ok = chooseResults()[i];
+  <li class="exercise-item flex gap-2">
+    <span class="w-5 shrink-0 text-right text-gray-500">{{ item.n }}.</span>
+    <div class="leading-8">
+      <span class="whitespace-pre-wrap">{{ item.before }}</span>
+      <span class="inline-flex gap-1 align-baseline" role="group" [attr.aria-label]="'Item ' + item.n">
+        @for (option of item.options; track $index) {
+        @let selected = chosen()[i] === option;
+        <button type="button" class="option-button rounded border px-2 py-0.5 enabled:hover:bg-gray-50"
+          [class.border-gray-300]="!selected"
+          [class.selected]="selected"
+          [class.border-primary-500]="selected && !checked()" [class.bg-primary-50]="selected && !checked()"
+          [class.is-correct]="selected && checked() && ok" [class.border-green-500]="selected && checked() && ok" [class.bg-green-50]="selected && checked() && ok"
+          [class.is-wrong]="selected && checked() && !ok" [class.border-red-500]="selected && checked() && !ok" [class.bg-red-50]="selected && checked() && !ok"
+          [attr.aria-pressed]="selected" [disabled]="checked()" (click)="choose(i, option)">{{ option }}</button>
+        }
+      </span>
+      <span class="whitespace-pre-wrap">{{ item.after }}</span>
+      @if (checked() && !ok) {
+      <span class="expected-answer ml-1 font-medium text-green-700">{{ primaryAnswer(item.answer) }}</span>
+      }
+    </div>
+  </li>
+  }
+</ol>
+
+<div class="mt-3 flex flex-wrap items-center gap-3">
+  @if (checked()) {
+  <span class="score font-semibold text-gray-900">{{ score().correct }} / {{ score().total }}</span>
+  <button type="button" class="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50" (click)="reset()">Opnieuw</button>
+  } @else {
+  <button type="button" class="rounded bg-primary-600 px-3 py-1 text-sm text-white hover:bg-primary-700" (click)="check()">Controleer</button>
+  }
+  @if (generated()) {
+  <span class="generated-note text-xs text-amber-800">Answers were not printed in the book and may be wrong.</span>
+  }
+</div>

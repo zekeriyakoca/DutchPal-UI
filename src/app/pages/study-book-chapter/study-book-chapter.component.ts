@@ -15,6 +15,8 @@ import {
   cultureText,
   exercisePrompts,
 } from '../../components/chapter-content/content-format';
+import { PLAYABLE_EXERCISE_TYPES } from '../../components/chapter-content/exercise-check';
+import { PlayableExerciseComponent } from '../../components/chapter-content/playable-exercise.component';
 
 @Component({
   selector: 'app-study-book-chapter',
@@ -24,6 +26,7 @@ import {
     StudyBookTabsComponent,
     DialogueViewComponent,
     GrammarTopicComponent,
+    PlayableExerciseComponent,
   ],
   templateUrl: './study-book-chapter.component.html',
 })
@@ -32,6 +35,7 @@ export class StudyBookChapterComponent {
 
   readonly generatedAnswers = GENERATED_ANSWERS_SOURCE;
   readonly exercisePrompts = exercisePrompts;
+  readonly playableTypes = PLAYABLE_EXERCISE_TYPES;
   readonly cultureText = cultureText;
 
   chapterId = signal<number | null>(null);

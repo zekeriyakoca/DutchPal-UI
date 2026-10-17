@@ -83,7 +83,7 @@ describe('StudyBookChapterComponent', () => {
     expect(el.textContent).toContain('het woord');
     expect(el.textContent).toContain('lemma: lopen');
     expect(el.textContent).not.toContain('form: liep');
-    expect(el.textContent).toContain('Ik ___ hier.');
+    expect(el.querySelectorAll('.gap-input').length).toBe(1);
     expect(el.textContent).not.toContain('ben');
     expect(el.textContent).toContain('iets testen');
   });
