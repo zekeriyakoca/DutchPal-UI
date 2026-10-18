@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, DestroyRef, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, first } from 'rxjs';
 import { ApiService } from '../../services/api.service';
@@ -7,6 +7,7 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { AskContext } from '../../components/selection-options/selection-options.component';
 import { ExerciseComponent } from '../book-chapters/exercise.component';
 import { Chapter, ChapterSummary, ContentBook, Exercise } from '../../models/contentModels';
 import { DialogService } from '../../services/dialog.service';
@@ -38,6 +39,15 @@ export class ExamsComponent {
   selectedBook = '';
   selectedChapter = 0;
   isLoading = signal(false);
+  // What the user is practising, sent with "Ask ChatGPT / Claude" on a selection.
+  askContext = computed<AskContext | null>(() => {
+    const ch = this.chapter();
+    if (!ch) return null;
+    return {
+      level: this.books().find((b) => b.book_id === ch.book_id)?.cefr ?? null,
+      source: `I'm practising the exam "${ch.book_title}", part "${ch.title}".`,
+    };
+  });
 
   mode = signal<Mode>('exam');
   // Exam time when the chapter has no official duration_minutes.

@@ -8,6 +8,7 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { AskContext } from '../../components/selection-options/selection-options.component';
 import { ExerciseComponent } from './exercise.component';
 import {
   BookCategory,
@@ -54,6 +55,15 @@ export class BookChaptersComponent {
   selectedBook = '';
   selectedChapter = 0;
   isLoading = signal(false);
+  // What the user is reading, sent with "Ask ChatGPT / Claude" on a selection.
+  askContext = computed<AskContext | null>(() => {
+    const ch = this.chapter();
+    if (!ch) return null;
+    return {
+      level: this.books().find((b) => b.book_id === ch.book_id)?.cefr ?? null,
+      source: `I'm reading "${ch.book_title}", chapter ${ch.number} "${ch.title}".`,
+    };
+  });
   readonly vocabPreview = VOCAB_PREVIEW;
   // Indexes of the vocabulary lists the user expanded in this chapter.
   expandedLists = new Set<number>();
