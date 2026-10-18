@@ -1,0 +1,153 @@
+<app-page-concept-sidebar class="block w-full" title="Exams"
+  subtitle="Practise the official sample exams section by section, timed or at your own pace.">
+  <sidebar-menu>
+    <div class="flex flex-col gap-4">
+      <div>
+        <label for="exam-book" class="field-label">Exam</label>
+        <select id="exam-book" [ngModel]="selectedBook" (ngModelChange)="setBookSelected($event)" name="book"
+          class="field" [disabled]="mode() === 'exam' && phase() === 'running'">
+          <option value="" disabled>Select an Option</option>
+          @for (book of books(); track book.book_id) {
+          <option [value]="book.book_id">{{book.title}}{{book.cefr ? ' (' + book.cefr + ')' : ''}}</option>
+          }
+        </select>
+      </div>
+      @if (chapters().length) {
+      <div>
+        <label for="exam-part" class="field-label">Year and skill</label>
+        <select id="exam-part" [ngModel]="selectedChapter" (ngModelChange)="setChapterSelected($event)" name="chapter"
+          class="field" [disabled]="mode() === 'exam' && phase() === 'running'">
+          @for (item of chapters(); track item.id) {
+          <option [ngValue]="item.id">{{item.title}}</option>
+          }
+        </select>
+      </div>
+      }
+      @if (chapter(); as ch) {
+      <div>
+        <label for="exam-section" class="field-label">Section</label>
+        <select id="exam-section" [ngModel]="current()" (ngModelChange)="goTo($event)" name="section" class="field"
+          [disabled]="phase() === 'setup'">
+          @for (exercise of ch.exercises; track exercise.id; let i = $index) {
+          <option [ngValue]="i">{{i + 1}}. {{sectionLabel(exercise)}}</option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+  </sidebar-menu>
+  <master-content>
+    <article #content class="prose mx-auto min-h-[16rem] max-w-reading scroll-mt-24 rounded-control"
+      [appSpinUntil]="isLoading()">
+      <div appShowSelectionOptions>
+        @if (chapter(); as ch) {
+        <p class="not-prose text-sm font-medium text-accent-600">{{ch.book_title}}</p>
+        <h1 class="!mb-3 !mt-1 text-3xl">{{ch.title}}</h1>
+
+        @if (phase() === 'setup') {
+        <p class="text-ink-muted">
+          {{ch.exercises.length}} sections@if (ch.duration_minutes) { · official time {{ch.duration_minutes}} minutes}
+        </p>
+        <div class="not-prose flex flex-col items-start gap-4">
+          <div class="segmented" role="group" aria-label="Mode">
+            <button type="button" [attr.aria-pressed]="mode() === 'exam'" (click)="mode.set('exam')">Exam mode</button>
+            <button type="button" [attr.aria-pressed]="mode() === 'free'" (click)="mode.set('free')">Free mode</button>
+          </div>
+          <p class="text-sm text-ink-muted">
+            @if (mode() === 'exam') {
+            A countdown runs with reminders at 10 and 1 minute left. Answers are checked when you finish or when the
+            time is up.
+            } @else {
+            No timer. Check each section whenever you like.
+            }
+          </p>
+          @if (mode() === 'exam' && !ch.duration_minutes) {
+          <div>
+            <label for="exam-minutes" class="field-label">Minutes</label>
+            <input id="exam-minutes" type="number" min="1" [(ngModel)]="minutes" name="minutes" class="field w-32" />
+          </div>
+          }
+          <button type="button" class="btn-primary" [disabled]="!canStart() || !ch.exercises.length"
+            (click)="start()">Start</button>
+        </div>
+        } @else {
+        <div class="not-prose my-4 flex flex-wrap items-center justify-between gap-3">
+          <span class="text-sm font-medium text-ink-muted">Section {{current() + 1}} of {{ch.exercises.length}}</span>
+          <div class="flex items-center gap-3">
+            @if (mode() === 'exam' && phase() === 'running') {
+            <span class="chip px-3 py-1 font-mono text-sm tabular-nums"
+              [class]="remaining() <= 600 ? 'bg-warning-100 text-warning-800' : 'bg-primary-50 text-primary-700'"
+              role="timer" aria-label="Time left">{{clock()}}</span>
+            }
+            @if (phase() === 'running') {
+            <button type="button" class="btn-primary" (click)="confirmFinish()">Finish</button>
+            } @else {
+            <button type="button" class="btn-secondary" (click)="reset()">Start again</button>
+            }
+          </div>
+        </div>
+        @if (phase() === 'finished') {
+        @let score = total();
+        <div class="not-prose mb-6 rounded-card bg-primary-50/70 p-5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-primary-700">Result</p>
+          <p class="mt-1 font-display text-2xl font-semibold text-ink">{{score.correct}} / {{score.total}}</p>
+          @if (scores().length) {
+          <ul class="mt-3 space-y-1 text-sm">
+            @for (row of scores(); track row.index) {
+            <li>
+              <button type="button" class="flex w-full justify-between gap-4 rounded-control px-2 py-1 text-left hover:bg-white"
+                (click)="goTo(row.index)">
+                <span>{{row.index + 1}}. {{row.label}}</span>
+                <span class="font-medium tabular-nums"
+                  [class]="row.correct === row.total ? 'text-success-700' : 'text-danger-700'">{{row.correct}} /
+                  {{row.total}}</span>
+              </button>
+            </li>
+            }
+          </ul>
+          }
+        </div>
+        }
+
+        @for (exercise of ch.exercises; track exercise.id; let i = $index) {
+        <section class="my-5 rounded-card border border-line px-5 py-1 [&_h3]:!mt-4" [hidden]="i !== current()">
+          <app-exercise [exercise]="exercise" [locked]="mode() === 'exam' && phase() === 'running'" />
+        </section>
+        }
+
+        <!-- After the sections: the map reads their state, which exists once they are rendered. -->
+        <nav class="not-prose mt-8 border-t border-line pt-6" aria-label="Sections">
+          <div class="mb-4 flex flex-wrap gap-1.5">
+            @for (exercise of ch.exercises; track exercise.id; let i = $index) {
+            <button type="button" class="size-8 rounded-control text-xs font-semibold transition-colors"
+              [class]="mapClass(i)" [attr.aria-current]="i === current() ? 'step' : null"
+              [title]="sectionLabel(exercise)" (click)="goTo(i)">{{i + 1}}</button>
+            }
+          </div>
+          <div class="flex justify-between gap-3">
+            <button type="button" class="btn-secondary" [disabled]="current() === 0" (click)="goTo(current() - 1)">
+              <span aria-hidden="true">&larr;</span> Previous
+            </button>
+            <button type="button" class="btn-secondary" [disabled]="current() === ch.exercises.length - 1"
+              (click)="goTo(current() + 1)">
+              Next <span aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+        </nav>
+        }
+        } @else if (!isLoading()) {
+        <div class="not-prose empty-state">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+          </svg>
+          <h2>Pick an exam to start</h2>
+          <p class="text-sm">Choose an exam and a year and skill from the options. Select any text to translate or
+            explain it.</p>
+        </div>
+        }
+      </div>
+    </article>
+  </master-content>
+</app-page-concept-sidebar>

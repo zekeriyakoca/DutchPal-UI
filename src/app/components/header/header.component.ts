@@ -20,6 +20,7 @@ export class HeaderComponent {
     { path: '/vocab-game', label: 'Vocab Game' },
     { path: '/quiz', label: 'Practice' },
     { path: '/study-book', label: 'Study Book' },
+    { path: '/exams', label: 'Exams' },
   ];
 
   constructor(public authService: AuthService) {}

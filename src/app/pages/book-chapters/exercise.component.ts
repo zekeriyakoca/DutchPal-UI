@@ -1,10 +1,14 @@
 import { Component, computed, input, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MarkdownPipe } from 'ngx-markdown';
 import { Exercise } from '../../models/contentModels';
 import { environment } from '../../../environments/environment';
 
 // A gap is `___` (fill_gap) or `{a/b}` (choose_option).
 const GAP = /_{3,}|\{[^{}]*\}/;
+// Reading texts are light Markdown where a single newline is a line break (addresses).
+const TEXT_MARKDOWN = { markedOptions: { breaks: true } };
 
 /** Compares trimmed and case-insensitive, ignoring trailing .,!?; `expected` may hold `|`-separated alternatives. */
 export function isCorrect(given: string, expected: string): boolean {
@@ -16,11 +20,14 @@ export function isCorrect(given: string, expected: string): boolean {
 @Component({
   selector: 'app-exercise',
   standalone: true,
-  imports: [FormsModule],
+  imports: [AsyncPipe, FormsModule, MarkdownPipe],
   templateUrl: './exercise.component.html',
 })
 export class ExerciseComponent implements OnInit {
   exercise = input.required<Exercise>();
+  // Exam mode: no checking and no assessment until the attempt is finished.
+  locked = input(false);
+  readonly textMarkdown = TEXT_MARKDOWN;
 
   // Exam-style multiple choice: every question has options and an answer `a`.
   multipleChoice = computed(() => {
@@ -43,6 +50,7 @@ export class ExerciseComponent implements OnInit {
 
   given: string[][] = [];
   results: boolean[][] | null = null;
+  written = '';
   showAssessment = false;
 
   mediaUrl(path: string) {
@@ -50,8 +58,20 @@ export class ExerciseComponent implements OnInit {
   }
 
   get score() {
-    const all = this.results!.flat();
-    return `${all.filter(Boolean).length} / ${all.length}`;
+    const { correct, total } = this.tally()!;
+    return `${correct} / ${total}`;
+  }
+
+  /** Correct and total answers once checked; null for exercises that are not checked. */
+  tally(): { correct: number; total: number } | null {
+    const all = this.results?.flat();
+    return all ? { correct: all.filter(Boolean).length, total: all.length } : null;
+  }
+
+  /** Whether every question has an answer; null when there is nothing to answer. */
+  answered(): boolean | null {
+    if (this.playable()) return this.given.every((gaps) => gaps.every((g) => g.trim() !== ''));
+    return this.exercise().type === 'writing' ? this.written.trim() !== '' : null;
   }
 
   ngOnInit() {
