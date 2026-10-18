@@ -91,10 +91,55 @@
   [(ngModel)]="written"></textarea>
 }
 @if (!locked()) {
-<div class="not-prose my-4">
+<div class="not-prose my-4 flex flex-wrap gap-3">
+  @if (evaluable()) {
+  <button class="btn-primary" [appDisabledUntil]="isEvaluating() || !written.trim()" (click)="evaluate()">Evaluate</button>
+  }
   <button class="btn-secondary" (click)="showAssessment = !showAssessment">{{showAssessment ? 'Verberg beoordeling' :
     'Toon beoordeling'}}</button>
 </div>
+@if (isEvaluating() || evaluation()) {
+<div class="min-h-[6rem]" [appSpinUntil]="isEvaluating()" aria-live="polite">
+  @if (evaluation(); as ev) {
+  <h4>Feedback · {{ev.total}} / {{ev.max_total}}</h4>
+  <table>
+    <tbody>
+      @for (c of ev.criteria; track $index) {
+      <tr>
+        <td class="font-medium">{{c.name}}</td>
+        <td class="whitespace-nowrap">{{c.score}} / {{c.max}}</td>
+        <td>{{c.comment}}</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  @if (ev.corrections.length) {
+  <h4>Corrections</h4>
+  <ul>
+    @for (c of ev.corrections; track $index) {
+    <li><s class="text-danger-600">{{c.original}}</s> → <span class="font-medium text-success-700">{{c.corrected}}</span>
+      <span class="text-ink-muted"> — {{c.explanation}}</span></li>
+    }
+  </ul>
+  }
+  @if (ev.grammar_units.length) {
+  <h4>Study</h4>
+  <ul>
+    @for (unit of ev.grammar_units; track unit.chapter_id) {
+    <li><a routerLink="/study-book" [queryParams]="{ book: grammarBook, chapter: unit.chapter_id }"
+        target="_blank">{{unit.title}}</a><span class="text-ink-muted"> — {{unit.why}}</span></li>
+    }
+  </ul>
+  }
+  @if (ev.improved_text) {
+  <details>
+    <summary class="cursor-pointer font-medium">Improved text</summary>
+    <p class="whitespace-pre-line rounded-control bg-canvas px-4 py-3">{{ev.improved_text}}</p>
+  </details>
+  }
+  }
+</div>
+}
 @if (showAssessment) {
 @if (ex.payload.criteria?.length) {
 <h4>Beoordeling</h4>
