@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { GoogleSignInButtonDirective } from '../../directives/google-sign-in-button.directive';
+import { environment } from '../../../environments/environment';
+
+// Walkthrough videos live on the media volume, not in the repo.
+const VIDEOS = `${environment.apiUrl}/media/videos`;
 
 @Component({
   selector: 'app-landing',
@@ -73,6 +77,25 @@ export class LandingComponent {
       text: 'Look up a word and get its forms and example sentences, or translate a whole sentence.',
       path: '/translation',
       cta: 'Look up a word',
+    },
+  ];
+
+  readonly demos = [
+    {
+      title: 'Study a lesson',
+      text: 'Open a lesson of the Delftse methode, read it line by line, select a word to translate it, and review the word list before you go on.',
+      video: `${VIDEOS}/dutchpal-study-book-delftse.mp4`,
+      poster: `${VIDEOS}/dutchpal-study-book-delftse.jpg`,
+      path: '/study-book',
+      cta: 'Open the Study Book',
+    },
+    {
+      title: 'Take a practice exam',
+      text: 'Start a Staatsexamen B1 reading exam with the timer running, look up a word without leaving the exam, then see your score per section and review every answer.',
+      video: `${VIDEOS}/dutchpal-exams-b1.mp4`,
+      poster: `${VIDEOS}/dutchpal-exams-b1.jpg`,
+      path: '/exams',
+      cta: 'Try an exam',
     },
   ];
 
