@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
+import { LandingComponent } from './pages/landing/landing.component';
 import { TranslationComponent } from './pages/translation/translation.component';
 import { VocabGameComponent } from './pages/vocab-game/vocab-game.component';
 import { QuizComponent } from './pages/quiz/quiz.component';
 import { BookChaptersComponent } from './pages/book-chapters/book-chapters.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'ask', redirectTo: '' },
+  { path: '', component: LandingComponent },
+  { path: 'ask', redirectTo: 'chat' },
   { path: 'chat', component: HomeComponent },
   { path: 'quiz', component: QuizComponent },
   { path: 'translation', component: TranslationComponent },
