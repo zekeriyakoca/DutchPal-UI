@@ -21,12 +21,6 @@
         {{ isLoading() ? 'Translating…' : 'Translate' }}
       </button>
     </div>
-    @if (error()) {
-    <div role="alert" class="alert-error mt-4">
-      Couldn't translate that. {{ error() }}
-      <button type="button" class="ml-1 font-semibold underline" (click)="translate()">Try again</button>
-    </div>
-    }
   </div>
 
   <div class="card mt-6 min-h-[12rem] p-5 sm:p-8" [appSpinUntil]="isLoading()" aria-live="polite">

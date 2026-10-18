@@ -1,14 +1,18 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpContext, HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from './toast.service';
+
+// Requests whose page shows the error in a dialog skip the toast, so it is not shown twice.
+const PAGE_HANDLES_ERRORS = new HttpContextToken<boolean>(() => false);
+export const pageHandlesErrors = () => new HttpContext().set(PAGE_HANDLES_ERRORS, true);
 
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const toastService = inject(ToastService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      toastService.addError(toErrorMessage(error));
+      if (!req.context.get(PAGE_HANDLES_ERRORS)) toastService.addError(toErrorMessage(error));
       return throwError(() => error);
     })
   );

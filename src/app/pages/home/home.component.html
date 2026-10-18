@@ -63,12 +63,6 @@
           {{ isLoading() ? 'Thinking…' : 'Ask' }}
         </button>
       </div>
-      @if (error()) {
-      <div role="alert" class="alert-error mt-3">
-        Couldn't get an answer. {{ error() }}
-        <button type="button" class="ml-1 font-semibold underline" (click)="askQuestion()">Try again</button>
-      </div>
-      }
     </div>
 
     @if (!turns().length && !isLoading()) {

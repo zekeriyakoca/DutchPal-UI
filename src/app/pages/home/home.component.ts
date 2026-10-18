@@ -9,6 +9,7 @@ import { DisabledUntilDirective } from '../../directives/disable-until.directive
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { apiErrorMessage } from '../../services/http-error.interceptor';
 import { ChatTurn } from '../../models/apiRequestModels';
+import { DialogService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-home',
@@ -30,9 +31,11 @@ export class HomeComponent {
   // This page session's conversation, oldest first; not stored anywhere.
   turns = signal<ChatTurn[]>([]);
   isLoading = signal(false);
-  error = signal('');
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private dialog: DialogService
+  ) {}
 
   // Enter sends, Shift+Enter keeps the newline.
   onEnter(event: Event) {
@@ -46,7 +49,6 @@ export class HomeComponent {
     const question = this.prompt.trim();
     if (this.isLoading() || !question) return;
     this.isLoading.set(true);
-    this.error.set('');
     this.apiService
       .ask(question, this.turns())
       .pipe(
@@ -63,7 +65,7 @@ export class HomeComponent {
           this.prompt = '';
         },
         error: (err) => {
-          this.error.set(apiErrorMessage(err));
+          this.dialog.error("Couldn't get an answer", apiErrorMessage(err), () => this.askQuestion());
         },
       });
   }

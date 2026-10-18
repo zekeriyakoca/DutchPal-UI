@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { pageHandlesErrors } from './http-error.interceptor';
 import {
   ApiResponse,
   QuizResponse,
@@ -52,7 +53,7 @@ export class ApiService {
   ask(prompt: string, history: ChatTurn[]): Observable<string> {
     const body: ChatRequest = { message: prompt, history };
     return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/chat`, body, { context: pageHandlesErrors() })
       .pipe(map((response) => response.response));
   }
 
@@ -60,7 +61,8 @@ export class ApiService {
     const body: WordLookupRequest = { word };
     return this._httpClient.post<WordLookup>(
       `${environment.apiUrl}/word/lookup`,
-      body
+      body,
+      { context: pageHandlesErrors() }
     );
   }
 
@@ -90,7 +92,7 @@ export class ApiService {
       message: text,
     };
     return this._httpClient
-      .post<ApiResponse<string>>(`${environment.apiUrl}/translate`, body)
+      .post<ApiResponse<string>>(`${environment.apiUrl}/translate`, body, { context: pageHandlesErrors() })
       .pipe(map((response) => response.response));
   }
 
@@ -214,14 +216,14 @@ export class ApiService {
     return this._httpClient.put<UserSettings>(
       `${environment.apiUrl}/settings/notion`,
       body,
-      withSession
+      { ...withSession, context: pageHandlesErrors() }
     );
   }
 
   useDefaultNotion(): Observable<UserSettings> {
     return this._httpClient.delete<UserSettings>(
       `${environment.apiUrl}/settings/notion`,
-      withSession
+      { ...withSession, context: pageHandlesErrors() }
     );
   }
 
@@ -230,7 +232,7 @@ export class ApiService {
     return this._httpClient.post<Record<string, string>>(
       `${environment.apiUrl}/settings/notion/test`,
       {},
-      withSession
+      { ...withSession, context: pageHandlesErrors() }
     );
   }
 }

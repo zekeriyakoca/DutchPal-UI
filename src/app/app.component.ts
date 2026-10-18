@@ -8,6 +8,7 @@ import { concatMap, delay, filter, map, Observable, of } from 'rxjs';
 import { ToastService } from './services/toast.service';
 import { ToastComponent } from './components/toast/toast.component';
 import { PermanentToastComponent } from './components/permanent-toast/permanent-toast.component';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ import { PermanentToastComponent } from './components/permanent-toast/permanent-
     FooterComponent,
     ToastComponent,
     PermanentToastComponent,
+    DialogComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.component.html',

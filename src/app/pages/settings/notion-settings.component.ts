@@ -8,6 +8,7 @@ import { ToastService } from '../../services/toast.service';
 import { apiErrorMessage } from '../../services/http-error.interceptor';
 import { UserSettings } from '../../models/userModels';
 import { DisabledUntilDirective } from '../../directives/disable-until.directive';
+import { DialogService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-notion-settings',
@@ -21,13 +22,13 @@ export class NotionSettingsComponent {
   verbDbId = '';
   isSecretSet = signal(false);
   isBusy = signal(false);
-  error = signal('');
   connectedTo = signal(''); // database titles after a successful test
 
   constructor(
     public authService: AuthService,
     private apiService: ApiService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private dialog: DialogService
   ) {
     effect(() => {
       if (this.authService.user()) {
@@ -53,7 +54,6 @@ export class NotionSettingsComponent {
 
   test() {
     this.isBusy.set(true);
-    this.error.set('');
     this.connectedTo.set('');
     this.apiService.testNotion().pipe(first()).subscribe({
       next: (titles) => {
@@ -61,7 +61,7 @@ export class NotionSettingsComponent {
         this.isBusy.set(false);
       },
       error: (error) => {
-        this.error.set(apiErrorMessage(error));
+        this.dialog.error("Couldn't connect to Notion", apiErrorMessage(error));
         this.isBusy.set(false);
       },
     });
@@ -69,7 +69,6 @@ export class NotionSettingsComponent {
 
   private run(request: ReturnType<ApiService['getSettings']>, message: string) {
     this.isBusy.set(true);
-    this.error.set('');
     this.connectedTo.set('');
     request.pipe(first()).subscribe({
       next: (settings) => {
@@ -78,7 +77,7 @@ export class NotionSettingsComponent {
         this.isBusy.set(false);
       },
       error: (error) => {
-        this.error.set(apiErrorMessage(error));
+        this.dialog.error("Couldn't save the Notion settings", apiErrorMessage(error));
         this.isBusy.set(false);
       },
     });

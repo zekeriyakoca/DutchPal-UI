@@ -9,6 +9,7 @@ import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 import { ExerciseComponent } from '../book-chapters/exercise.component';
 import { Chapter, ChapterSummary, ContentBook, Exercise } from '../../models/contentModels';
+import { DialogService } from '../../services/dialog.service';
 
 type Mode = 'exam' | 'free';
 type Phase = 'setup' | 'running' | 'finished';
@@ -55,7 +56,8 @@ export class ExamsComponent {
     private apiService: ApiService,
     private toastService: ToastService,
     private userPreferences: UserPreferencesService,
-    destroyRef: DestroyRef
+    destroyRef: DestroyRef,
+    private dialog: DialogService
   ) {
     destroyRef.onDestroy(() => this.stopTimer());
     this.apiService
@@ -130,11 +132,16 @@ export class ExamsComponent {
     return this.sections().filter((s) => s.answered() === false).length;
   }
 
-  confirmFinish() {
+  async confirmFinish() {
     const open = this.unansweredCount();
-    if (!open || confirm(`${open} ${open === 1 ? 'section is' : 'sections are'} not fully answered. Finish anyway?`)) {
-      this.finish();
-    }
+    const finish =
+      !open ||
+      (await this.dialog.confirm(
+        'Finish the exam?',
+        `${open} ${open === 1 ? 'section is' : 'sections are'} not fully answered.`,
+        'Finish anyway'
+      ));
+    if (finish) this.finish();
   }
 
   /** Checks every section, keeps the scores and opens the review. */

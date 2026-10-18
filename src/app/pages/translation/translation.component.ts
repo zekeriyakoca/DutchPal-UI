@@ -10,6 +10,7 @@ import { DisabledUntilDirective } from '../../directives/disable-until.directive
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { apiErrorMessage } from '../../services/http-error.interceptor';
 import { WordLookup } from '../../models/apiResponse';
+import { DialogService } from '../../services/dialog.service';
 
 @Component({
   selector: 'app-translation',
@@ -31,7 +32,6 @@ export class TranslationComponent {
   response = signal('');
   word = signal<WordLookup | null>(null);
   isLoading = signal(false);
-  error = signal('');
 
   readonly sourceLabels: Record<WordLookup['source'], string> = {
     book: 'From the book',
@@ -41,7 +41,8 @@ export class TranslationComponent {
 
   constructor(
     private apiService: ApiService,
-    private userPreferences: UserPreferencesService
+    private userPreferences: UserPreferencesService,
+    private dialog: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -59,11 +60,11 @@ export class TranslationComponent {
   translate() {
     if (this.isLoading() || !this.prompt.trim()) return;
     this.isLoading.set(true);
-    this.error.set('');
     this.response.set('');
     this.word.set(null);
     const done = () => this.isLoading.set(false);
-    const onError = (err: unknown) => this.error.set(apiErrorMessage(err));
+    const onError = (err: unknown) =>
+      this.dialog.error("Couldn't translate that", apiErrorMessage(err), () => this.translate());
 
     if (this.isTextTranslation) {
       this.apiService

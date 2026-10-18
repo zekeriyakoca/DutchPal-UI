@@ -31,9 +31,6 @@
       plus Pronunciation (nouns) or Conjugations and Past Tense (verbs); Name is the title.
     </p>
 
-    @if (error()) {
-    <div role="alert" class="alert-error">{{ error() }}</div>
-    }
     @if (connectedTo()) {
     <div role="status" class="rounded-control border border-success-200 bg-success-50 p-3 text-sm text-success-800">
       Connected to {{ connectedTo() }}.
