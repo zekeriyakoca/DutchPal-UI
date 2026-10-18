@@ -1,0 +1,53 @@
+<a routerLink="/settings/integrations" class="inline-flex items-center gap-1 text-sm font-medium text-ink-muted hover:text-ink">
+  <span aria-hidden="true">←</span> Integrations
+</a>
+
+<section class="card mt-3 p-5 sm:p-8" aria-labelledby="notion-heading">
+  <h2 id="notion-heading" class="text-lg font-semibold text-ink">Notion</h2>
+  <p class="mt-1 text-sm text-ink-muted">
+    Words you save from a text selection go to
+    <strong class="font-semibold text-ink">{{ isSecretSet() ? 'your own Notion workspace' : 'the default (shared) Notion' }}</strong>.
+    Add an integration secret and your database ids to use your own workspace.
+  </p>
+
+  <div class="mt-6 space-y-4">
+    <div>
+      <label for="notion-secret" class="field-label">Integration secret</label>
+      <input id="notion-secret" name="secret" type="password" autocomplete="off" class="field" [(ngModel)]="secret" (keydown.enter)="save()"
+        [placeholder]="isSecretSet() ? 'Saved. Enter a new one to replace it' : 'ntn_…'" />
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label for="notion-noun-db" class="field-label">Noun database id</label>
+        <input id="notion-noun-db" name="nounDbId" type="text" class="field" [(ngModel)]="nounDbId" (keydown.enter)="save()" />
+      </div>
+      <div>
+        <label for="notion-verb-db" class="field-label">Verb database id</label>
+        <input id="notion-verb-db" name="verbDbId" type="text" class="field" [(ngModel)]="verbDbId" (keydown.enter)="save()" />
+      </div>
+    </div>
+    <p class="text-xs text-ink-subtle">
+      Share both databases with your integration. They need the text columns Meaning, Sentence and Source,
+      plus Pronunciation (nouns) or Conjugations and Past Tense (verbs); Name is the title.
+    </p>
+
+    @if (error()) {
+    <div role="alert" class="alert-error">{{ error() }}</div>
+    }
+    @if (connectedTo()) {
+    <div role="status" class="rounded-control border border-success-200 bg-success-50 p-3 text-sm text-success-800">
+      Connected to {{ connectedTo() }}.
+    </div>
+    }
+
+    <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+      <button type="button" class="btn-primary" [appDisabledUntil]="isBusy()" (click)="save()">Save</button>
+      <button type="button" class="btn-secondary" [appDisabledUntil]="isBusy() || !isSecretSet()"
+        (click)="test()">Test connection</button>
+      @if (isSecretSet()) {
+      <button type="button" class="btn-secondary sm:ml-auto" [appDisabledUntil]="isBusy()"
+        (click)="useDefault()">Use the default (shared) Notion</button>
+      }
+    </div>
+  </div>
+</section>
