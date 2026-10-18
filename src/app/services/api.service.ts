@@ -245,7 +245,7 @@ export class ApiService {
     );
   }
 
-  // Dutch speech as MP3 (cached by the server). Errors are handled by TtsService, which falls back to the browser voice.
+  // Dutch speech as MP3 (cached by the server). Errors are handled by TtsService.
   textToSpeech(text: string): Observable<Blob> {
     return this._httpClient.get(`${environment.apiUrl}/tts`, {
       ...withSession,

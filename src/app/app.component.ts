@@ -9,6 +9,7 @@ import { ToastService } from './services/toast.service';
 import { ToastComponent } from './components/toast/toast.component';
 import { PermanentToastComponent } from './components/permanent-toast/permanent-toast.component';
 import { DialogComponent } from './components/dialog/dialog.component';
+import { NowSpeakingComponent } from './components/now-speaking/now-speaking.component';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ import { DialogComponent } from './components/dialog/dialog.component';
     ToastComponent,
     PermanentToastComponent,
     DialogComponent,
+    NowSpeakingComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './app.component.html',
