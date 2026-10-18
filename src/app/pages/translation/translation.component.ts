@@ -36,6 +36,7 @@ export class TranslationComponent {
   readonly sourceLabels: Record<WordLookup['source'], string> = {
     book: 'From the book',
     db: 'Word list + AI',
+    dictionary: 'Dictionary + AI',
     llm: 'From AI',
   };
 
