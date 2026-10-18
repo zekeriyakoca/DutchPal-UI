@@ -57,11 +57,13 @@
         <div class="not-prose rounded-card border border-line bg-canvas/50 px-5 py-4 leading-relaxed text-ink sm:px-6">
           @for (line of dialogue.lines; track $index) {
           @if (line.narration) {
-          <p class="my-2 text-ink-muted" [innerHTML]="line.text | markdown: { inline: true } | async"></p>
+          <p class="my-2 text-ink-muted"><span [innerHTML]="line.text | markdown: { inline: true } | async"></span>
+            <app-listen-button [text]="line.text" /></p>
           } @else {
           <p class="my-1.5" [class.italic]="line.stage" [class.text-ink-muted]="line.stage">
             @if (line.speaker) {<strong class="font-semibold text-primary-800">{{line.speaker}}:</strong>}
             {{line.text}}
+            @if (!line.stage) {<app-listen-button [text]="line.text" />}
           </p>
           }
           }
@@ -90,8 +92,9 @@
               @for (item of collapsed ? list.items.slice(0, vocabPreview) : list.items; track $index) {
               <tr>
                 <td class="font-medium">
-                  @if (item.article && !item.nl.startsWith(item.article + ' ')) { {{item.article}} }
-                  {{item.nl}}
+                  @let word = (item.article && !item.nl.startsWith(item.article + ' ') ? item.article + ' ' : '') + item.nl;
+                  {{word}}
+                  <app-listen-button [text]="word" />
                 </td>
                 <td class="text-ink-muted">{{item.en}}</td>
               </tr>

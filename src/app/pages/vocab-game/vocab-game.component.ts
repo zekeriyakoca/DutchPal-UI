@@ -11,6 +11,7 @@ import { Option } from '../../models/bootstrap';
 import { VocabItem } from '../../models/apiResponse';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { ListenButtonComponent } from '../../components/listen-button/listen-button.component';
 
 @Component({
   selector: 'app-vocab-game',
@@ -22,6 +23,7 @@ import { ShowSelectionOptionsDirective } from '../../directives/show-selection-o
     DisabledUntilDirective,
     SpinUntilDirective,
     ShowSelectionOptionsDirective,
+    ListenButtonComponent,
   ],
   templateUrl: './vocab-game.component.html',
   styleUrl: './vocab-game.component.scss',

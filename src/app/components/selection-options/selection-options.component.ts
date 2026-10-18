@@ -2,10 +2,11 @@ import { first, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ToastService } from './../../services/toast.service';
-import { Component, ElementRef, signal, computed, viewChild } from '@angular/core';
+import { Component, ElementRef, signal, computed, viewChild, inject } from '@angular/core';
 import { filter, switchMap } from 'rxjs/operators';
 import { WordTranslation } from '../../models/apiResponse';
 import { NotionNounDto, NotionVerbDto } from '../../models/notionModels';
+import { TtsService } from '../../services/tts.service';
 
 // What the user is reading, so the AI assistant gets some context with the selection.
 export interface AskContext {
@@ -165,5 +166,11 @@ export class SelectionOptionsComponent {
           );
         },
       });
+  }
+
+  private tts = inject(TtsService);
+
+  listen() {
+    this.tts.speak(this.selectedText());
   }
 }

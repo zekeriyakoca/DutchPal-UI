@@ -72,7 +72,7 @@
             <tbody>
               @for (item of words; track $index) {
               <tr>
-                <td><strong>{{ item.word }}</strong></td>
+                <td><strong>{{ item.word }}</strong> <app-listen-button [text]="item.word" /></td>
                 <td>
                   @if (item.cefr_level) {<span class="chip bg-primary-50 text-primary-700">{{ item.cefr_level }}</span>}
                 </td>
@@ -103,7 +103,8 @@
               [style.width.%]="(cardIndex() / words.length) * 100"></div>
           </div>
           <div class="my-6 rounded-card border border-line bg-gradient-to-b from-white to-canvas/60 px-6 py-10 text-center">
-            <p class="font-display text-3xl font-semibold text-primary-900 sm:text-4xl">{{ item.word }}</p>
+            <p class="font-display text-3xl font-semibold text-primary-900 sm:text-4xl">{{ item.word }}
+              <app-listen-button [text]="item.word" /></p>
             @if (isRevealed()) {
             <div class="mt-5 space-y-2 text-ink">
               <p class="text-sm text-ink-muted">

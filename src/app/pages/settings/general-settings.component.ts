@@ -17,17 +17,36 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
         "Ask" on a text selection opens this assistant with the selected text and your question.
       </p>
     </div>
+
+    <label class="mt-6 flex items-start gap-3">
+      <input type="checkbox" class="mt-0.5 size-4 accent-primary-600" [checked]="useAdvancedVoice()"
+        (change)="setUseAdvancedVoice($any($event.target).checked)" />
+      <span>
+        <span class="text-sm font-medium text-ink">Use advanced paid voice service</span>
+        <span class="mt-1 block text-xs text-ink-subtle">
+          "Listen" reads sentences and longer texts with Azure's natural Dutch voice instead of your browser's voice.
+          Single words always use it.
+        </span>
+      </span>
+    </label>
   </section>`,
 })
 export class GeneralSettingsComponent {
   aiAssistant = signal<'chatgpt' | 'claude'>('chatgpt');
+  useAdvancedVoice = signal(false);
 
   constructor(private userPreferences: UserPreferencesService) {
     this.aiAssistant.set(userPreferences.get('general.aiAssistant', 'chatgpt'));
+    this.useAdvancedVoice.set(userPreferences.get('general.useAdvancedVoice', false));
   }
 
   setAiAssistant(assistant: 'chatgpt' | 'claude') {
     this.aiAssistant.set(assistant);
     this.userPreferences.set('general.aiAssistant', assistant);
+  }
+
+  setUseAdvancedVoice(value: boolean) {
+    this.useAdvancedVoice.set(value);
+    this.userPreferences.set('general.useAdvancedVoice', value);
   }
 }
