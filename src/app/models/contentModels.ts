@@ -1,9 +1,12 @@
 // Read-only book content served by the backend content API (/content/...).
 
+export type BookCategory = 'learning' | 'reading' | 'grammar' | 'exams';
+
 export interface ContentBook {
   book_id: string;
   title: string;
   cefr: string | null;
+  category: BookCategory | null;
   chapter_count: number;
 }
 
@@ -12,6 +15,7 @@ export interface ChapterSummary {
   number: number;
   title: string;
   goals: string[];
+  duration_minutes: number | null;
   has_exercises: boolean;
 }
 
@@ -92,6 +96,7 @@ export interface Chapter {
   title: string;
   goals: string[];
   note: string | null;
+  duration_minutes: number | null;
   book_pages: [number, number] | null;
   dialogues: Dialogue[];
   vocabulary: VocabularyList[];

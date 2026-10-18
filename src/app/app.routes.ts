@@ -14,6 +14,10 @@ export const routes: Routes = [
   { path: 'vocab-game', component: VocabGameComponent },
   { path: 'study-book', component: BookChaptersComponent },
   {
+    path: 'exams',
+    loadComponent: () => import('./pages/exams/exams.component').then((m) => m.ExamsComponent),
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./pages/profile/profile.component').then((m) => m.ProfileComponent),

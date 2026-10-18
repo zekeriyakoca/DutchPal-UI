@@ -15,7 +15,9 @@ type PreferenceKey =
   | 'study-book.selectedChapterId'
   | 'study-book.isBringSentences'
   | 'book-chapters.bookId'
-  | 'book-chapters.chapterId';
+  | 'book-chapters.chapterId'
+  | 'exams.bookId'
+  | 'exams.chapterId';
 
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
@@ -33,6 +35,8 @@ type PreferenceMap = {
   'study-book.isBringSentences': boolean;
   'book-chapters.bookId': string;
   'book-chapters.chapterId': number;
+  'exams.bookId': string;
+  'exams.chapterId': number;
 };
 
 @Injectable({

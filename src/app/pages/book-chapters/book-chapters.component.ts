@@ -1,4 +1,6 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { MarkdownPipe } from 'ngx-markdown';
 import { FormsModule } from '@angular/forms';
 import { finalize, first } from 'rxjs';
 import { ApiService } from '../../services/api.service';
@@ -8,16 +10,29 @@ import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 import { ExerciseComponent } from './exercise.component';
 import {
+  BookCategory,
   Chapter,
   ChapterSummary,
   ContentBook,
 } from '../../models/contentModels';
 
+// Book picker groups, in this order; exam books live on the Exams page.
+const BOOK_GROUPS: { label: string; category: BookCategory | null }[] = [
+  { label: 'Learning Books', category: 'learning' },
+  { label: 'Reading Books', category: 'reading' },
+  { label: 'Grammar', category: 'grammar' },
+  { label: 'Other', category: null },
+];
+// Rows of a vocabulary list shown before "Show all".
+const VOCAB_PREVIEW = 3;
+
 @Component({
   selector: 'app-book-chapters',
   standalone: true,
   imports: [
+    AsyncPipe,
     FormsModule,
+    MarkdownPipe,
     PageConceptSidebarComponent,
     SpinUntilDirective,
     ShowSelectionOptionsDirective,
@@ -28,11 +43,20 @@ import {
 })
 export class BookChaptersComponent {
   books = signal<ContentBook[]>([]);
+  bookGroups = computed(() =>
+    BOOK_GROUPS.map((group) => ({
+      label: group.label,
+      books: this.books().filter((b) => b.category === group.category),
+    })).filter((group) => group.books.length)
+  );
   chapters = signal<ChapterSummary[]>([]);
   chapter = signal<Chapter | null>(null);
   selectedBook = '';
   selectedChapter = 0;
   isLoading = signal(false);
+  readonly vocabPreview = VOCAB_PREVIEW;
+  // Indexes of the vocabulary lists the user expanded in this chapter.
+  expandedLists = new Set<number>();
 
   constructor(
     private apiService: ApiService,
@@ -41,15 +65,17 @@ export class BookChaptersComponent {
     this.apiService
       .getContentBooks()
       .pipe(first())
-      .subscribe((books) => this.books.set(books));
-
-    const bookId = this.userPreferences.get('book-chapters.bookId', '');
-    if (bookId) {
-      this.setBookSelected(
-        bookId,
-        this.userPreferences.get('book-chapters.chapterId', 0)
-      );
-    }
+      .subscribe((books) => {
+        this.books.set(books.filter((b) => b.category !== 'exams'));
+        // A remembered exam book (from before the Exams page) is not restored here.
+        const bookId = this.userPreferences.get('book-chapters.bookId', '');
+        if (this.books().some((b) => b.book_id === bookId)) {
+          this.setBookSelected(
+            bookId,
+            this.userPreferences.get('book-chapters.chapterId', 0)
+          );
+        }
+      });
   }
 
   setBookSelected(bookId: string, chapterId = 0) {
@@ -74,7 +100,15 @@ export class BookChaptersComponent {
         first(),
         finalize(() => this.isLoading.set(false))
       )
-      .subscribe((chapter) => this.chapter.set(chapter));
+      .subscribe((chapter) => {
+        this.expandedLists.clear();
+        this.chapter.set(chapter);
+        window.scrollTo({ top: 0 });
+      });
+  }
+
+  toggleList(index: number) {
+    if (!this.expandedLists.delete(index)) this.expandedLists.add(index);
   }
 
   // The chapter before (-1) or after (+1) the selected one in this book.
@@ -82,10 +116,5 @@ export class BookChaptersComponent {
     const chapters = this.chapters();
     const index = chapters.findIndex((c) => c.id === this.selectedChapter);
     return index < 0 ? undefined : chapters[index + offset];
-  }
-
-  goToChapter(chapterId: number) {
-    this.setChapterSelected(chapterId);
-    window.scrollTo({ top: 0 });
   }
 }

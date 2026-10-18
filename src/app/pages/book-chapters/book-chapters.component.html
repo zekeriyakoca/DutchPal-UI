@@ -6,8 +6,12 @@
         <label for="book" class="field-label">Book</label>
         <select id="book" [ngModel]="selectedBook" (ngModelChange)="setBookSelected($event)" name="book" class="field">
           <option value="" disabled>Select an Option</option>
-          @for (book of books(); track book.book_id) {
-          <option [value]="book.book_id">{{book.title}}{{book.cefr ? ' (' + book.cefr + ')' : ''}}</option>
+          @for (group of bookGroups(); track group.label) {
+          <optgroup [label]="group.label">
+            @for (book of group.books; track book.book_id) {
+            <option [value]="book.book_id">{{book.title}}{{book.cefr ? ' (' + book.cefr + ')' : ''}}</option>
+            }
+          </optgroup>
           }
         </select>
       </div>
@@ -53,7 +57,7 @@
         <div class="not-prose rounded-card border border-line bg-canvas/50 px-5 py-4 leading-relaxed text-ink sm:px-6">
           @for (line of dialogue.lines; track $index) {
           @if (line.narration) {
-          <p class="my-2 text-ink-muted">{{line.text}}</p>
+          <p class="my-2 text-ink-muted" [innerHTML]="line.text | markdown: { inline: true } | async"></p>
           } @else {
           <p class="my-1.5" [class.italic]="line.stage" [class.text-ink-muted]="line.stage">
             @if (line.speaker) {<strong class="font-semibold text-primary-800">{{line.speaker}}:</strong>}
@@ -75,14 +79,15 @@
         @if (ch.vocabulary.length) {
         <h2>Vocabulary</h2>
         }
-        @for (list of ch.vocabulary; track $index) {
+        @for (list of ch.vocabulary; track $index; let l = $index) {
         @if (list.list) {
         <h3>{{list.list}}</h3>
         }
-        <div class="table-scroll">
-          <table>
+        @let collapsed = list.items.length > vocabPreview && !expandedLists.has(l);
+        <div class="table-scroll relative">
+          <table [class.!mb-0]="list.items.length > vocabPreview">
             <tbody>
-              @for (item of list.items; track $index) {
+              @for (item of collapsed ? list.items.slice(0, vocabPreview) : list.items; track $index) {
               <tr>
                 <td class="font-medium">
                   @if (item.article && !item.nl.startsWith(item.article + ' ')) { {{item.article}} }
@@ -93,7 +98,18 @@
               }
             </tbody>
           </table>
+          @if (collapsed) {
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-white"></div>
+          }
         </div>
+        @if (list.items.length > vocabPreview) {
+        <div class="not-prose mb-8 mt-2">
+          <button type="button" class="text-sm font-medium text-primary-600 hover:text-primary-700"
+            [attr.aria-expanded]="!collapsed" (click)="toggleList(l)">
+            {{collapsed ? 'Show all (' + list.items.length + ')' : 'Show less'}}
+          </button>
+        </div>
+        }
         }
 
         @if (ch.grammar.length) {
@@ -182,12 +198,12 @@
         <nav class="not-prose mt-10 flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:justify-between"
           aria-label="Chapters">
           @if (adjacentChapter(-1); as prev) {
-          <button type="button" class="btn-secondary justify-start text-left" (click)="goToChapter(prev.id)">
+          <button type="button" class="btn-secondary justify-start text-left" (click)="setChapterSelected(prev.id)">
             <span aria-hidden="true">&larr;</span> {{prev.number}}. {{prev.title}}
           </button>
           } @else { <span></span> }
           @if (adjacentChapter(1); as next) {
-          <button type="button" class="btn-secondary justify-end text-right" (click)="goToChapter(next.id)">
+          <button type="button" class="btn-secondary justify-end text-right" (click)="setChapterSelected(next.id)">
             {{next.number}}. {{next.title}} <span aria-hidden="true">&rarr;</span>
           </button>
           }
