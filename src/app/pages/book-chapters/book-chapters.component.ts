@@ -2,12 +2,14 @@ import { Component, computed, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/co
 import { AsyncPipe } from '@angular/common';
 import { MarkdownPipe } from 'ngx-markdown';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { finalize, first } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { UserPreferencesService } from '../../services/user-preferences.service';
 import { PageConceptSidebarComponent } from '../../components/page-concept-sidebar/page-concept-sidebar.component';
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
+import { AskContext } from '../../components/selection-options/selection-options.component';
 import { ExerciseComponent } from './exercise.component';
 import { ListenButtonComponent } from '../../components/listen-button/listen-button.component';
 import {
@@ -56,25 +58,37 @@ export class BookChaptersComponent {
   selectedBook = '';
   selectedChapter = 0;
   isLoading = signal(false);
+  // What the user is reading, sent with "Ask ChatGPT / Claude" on a selection.
+  askContext = computed<AskContext | null>(() => {
+    const ch = this.chapter();
+    if (!ch) return null;
+    return {
+      level: this.books().find((b) => b.book_id === ch.book_id)?.cefr ?? null,
+      source: `I'm reading "${ch.book_title}", chapter ${ch.number} "${ch.title}".`,
+    };
+  });
   readonly vocabPreview = VOCAB_PREVIEW;
   // Indexes of the vocabulary lists the user expanded in this chapter.
   expandedLists = new Set<number>();
 
   constructor(
     private apiService: ApiService,
-    private userPreferences: UserPreferencesService
+    private userPreferences: UserPreferencesService,
+    route: ActivatedRoute
   ) {
+    // A link like ?book=dutch-grammar-in-use&chapter=172 (writing feedback) wins over the remembered chapter.
+    const linked = route.snapshot.queryParamMap;
     this.apiService
       .getContentBooks()
       .pipe(first())
       .subscribe((books) => {
         this.books.set(books.filter((b) => b.category !== 'exams'));
         // A remembered exam book (from before the Exams page) is not restored here.
-        const bookId = this.userPreferences.get('book-chapters.bookId', '');
+        const bookId = linked.get('book') ?? this.userPreferences.get('book-chapters.bookId', '');
         if (this.books().some((b) => b.book_id === bookId)) {
           this.setBookSelected(
             bookId,
-            this.userPreferences.get('book-chapters.chapterId', 0)
+            Number(linked.get('chapter')) || this.userPreferences.get('book-chapters.chapterId', 0)
           );
         }
       });

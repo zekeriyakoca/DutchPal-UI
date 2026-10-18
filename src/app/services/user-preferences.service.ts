@@ -18,7 +18,8 @@ type PreferenceKey =
   | 'book-chapters.bookId'
   | 'book-chapters.chapterId'
   | 'exams.bookId'
-  | 'exams.chapterId';
+  | 'exams.chapterId'
+  | 'general.aiAssistant';
 
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
@@ -39,6 +40,7 @@ type PreferenceMap = {
   'book-chapters.chapterId': number;
   'exams.bookId': string;
   'exams.chapterId': number;
+  'general.aiAssistant': 'chatgpt' | 'claude';
 };
 
 @Injectable({

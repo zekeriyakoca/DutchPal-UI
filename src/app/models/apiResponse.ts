@@ -45,3 +45,13 @@ export interface QuizQuestion {
 export interface QuizResponse {
   questions: QuizQuestion[];
 }
+
+// Feedback on an exam writing task, scored on its criteria.
+export interface WritingEvaluation {
+  criteria: { name: string; score: number; max: number; comment: string }[];
+  total: number;
+  max_total: number;
+  corrections: { original: string; corrected: string; explanation: string }[];
+  grammar_units: { chapter_id: number; title: string; why: string }[];
+  improved_text: string;
+}

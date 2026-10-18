@@ -42,3 +42,9 @@ export interface QuizRequest {
   book_id?: string;
   quiz_type: 'MIXED' | 'VOCABULARY' | 'TRANSLATION' | 'GRAMMAR';
 }
+
+// Used by /writing/evaluate
+export interface WritingEvaluationRequest {
+  exercise_id: number;
+  answer: string;
+}

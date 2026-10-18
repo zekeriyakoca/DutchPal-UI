@@ -9,6 +9,7 @@ import {
   VocabItem,
   WordLookup,
   WordTranslation,
+  WritingEvaluation,
 } from '../models/apiResponse';
 import {
   ChatRequest,
@@ -18,6 +19,7 @@ import {
   QuizRequest,
   TranslateWordSimpleRequest,
   WordLookupRequest,
+  WritingEvaluationRequest,
 } from '../models/apiRequestModels';
 import { BootstrapData } from '../models/bootstrap';
 import { NotionVerbDto, NotionNounDto } from '../models/notionModels';
@@ -142,6 +144,13 @@ export class ApiService {
       `${environment.apiUrl}/quiz`,
       body
     );
+  }
+
+  evaluateWriting(exerciseId: number, answer: string): Observable<WritingEvaluation> {
+    const body: WritingEvaluationRequest = { exercise_id: exerciseId, answer };
+    return this._httpClient.post<WritingEvaluation>(`${environment.apiUrl}/writing/evaluate`, body, {
+      context: pageHandlesErrors(),
+    });
   }
 
   getContentBooks(): Observable<ContentBook[]> {

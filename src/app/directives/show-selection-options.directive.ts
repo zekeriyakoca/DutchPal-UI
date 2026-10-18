@@ -7,14 +7,19 @@ import {
   HostListener,
   Injector,
   ComponentRef,
+  input,
 } from '@angular/core';
-import { SelectionOptionsComponent } from '../components/selection-options/selection-options.component';
+import {
+  AskContext,
+  SelectionOptionsComponent,
+} from '../components/selection-options/selection-options.component';
 
 @Directive({
   selector: '[appShowSelectionOptions]',
   standalone: true,
 })
 export class ShowSelectionOptionsDirective {
+  askContext = input<AskContext | null>(null);
   private componentRef: ComponentRef<SelectionOptionsComponent> | null = null;
 
   constructor(
@@ -80,6 +85,7 @@ export class ShowSelectionOptionsDirective {
       this.componentRef.instance.position = position;
       this.componentRef.instance.visible = true;
       this.componentRef.instance.selectedText.set(selectedText);
+      this.componentRef.instance.askContext = this.askContext();
       return;
     }
 
@@ -90,6 +96,7 @@ export class ShowSelectionOptionsDirective {
     this.componentRef.instance.position = position;
     this.componentRef.instance.visible = true;
     this.componentRef.instance.selectedText.set(selectedText);
+    this.componentRef.instance.askContext = this.askContext();
 
     this.appRef.attachView(this.componentRef.hostView);
     const domElem = (this.componentRef.hostView as EmbeddedViewRef<any>)
