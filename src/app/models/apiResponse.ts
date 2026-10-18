@@ -2,7 +2,7 @@ export interface ApiResponse<T> {
   response: T;
 }
 
-// /word/lookup: book and word-list facts first, the AI only fills gaps (examples are always AI)
+// /word/lookup: book and word-list facts first, then the Translator dictionary; the AI only fills gaps
 export interface WordLookup {
   word: string;
   lemma: string;
@@ -12,7 +12,7 @@ export interface WordLookup {
   pos: string | null;
   forms: { present: string | null; v2: string | null; v3: string | null };
   examples: string[];
-  source: 'book' | 'db' | 'llm';
+  source: 'book' | 'db' | 'dictionary' | 'llm';
 }
 
 export interface WordTranslation {
