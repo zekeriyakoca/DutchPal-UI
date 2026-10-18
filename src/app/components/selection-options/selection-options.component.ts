@@ -1,10 +1,11 @@
 import { first, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { ToastService } from './../../services/toast.service';
-import { Component, input, signal, computed } from '@angular/core';
+import { Component, input, signal, computed, inject } from '@angular/core';
 import { filter, switchMap } from 'rxjs/operators';
 import { WordTranslation } from '../../models/apiResponse';
 import { NotionNounDto, NotionVerbDto } from '../../models/notionModels';
+import { TtsService } from '../../services/tts.service';
 
 @Component({
   selector: 'app-selection-options',
@@ -130,5 +131,11 @@ export class SelectionOptionsComponent {
           );
         },
       });
+  }
+
+  private tts = inject(TtsService);
+
+  listen() {
+    this.tts.speak(this.selectedText());
   }
 }

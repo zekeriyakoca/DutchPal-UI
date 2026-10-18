@@ -9,6 +9,7 @@ import { PageConceptSidebarComponent } from '../../components/page-concept-sideb
 import { SpinUntilDirective } from '../../directives/spin-until.directive';
 import { ShowSelectionOptionsDirective } from '../../directives/show-selection-options.directive';
 import { ExerciseComponent } from './exercise.component';
+import { ListenButtonComponent } from '../../components/listen-button/listen-button.component';
 import {
   BookCategory,
   Chapter,
@@ -37,6 +38,7 @@ const VOCAB_PREVIEW = 3;
     SpinUntilDirective,
     ShowSelectionOptionsDirective,
     ExerciseComponent,
+    ListenButtonComponent,
   ],
   templateUrl: './book-chapters.component.html',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
