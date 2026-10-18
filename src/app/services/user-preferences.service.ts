@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 type PreferenceKey =
   | 'translation.isTextTranslation'
   | 'general.useAdvancedVoice'
+  | 'general.voiceSpeed'
   | 'vocab-game.selectedLevel'
   | 'vocab-game.bookId'
   | 'vocab-game.selectedWordType'
@@ -24,6 +25,7 @@ type PreferenceKey =
 type PreferenceMap = {
   'translation.isTextTranslation': boolean;
   'general.useAdvancedVoice': boolean;
+  'general.voiceSpeed': number;
   'vocab-game.selectedLevel': string;
   'vocab-game.bookId': string;
   'vocab-game.selectedWordType': string;

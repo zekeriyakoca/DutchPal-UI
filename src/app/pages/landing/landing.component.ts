@@ -11,38 +11,38 @@ import { GoogleSignInButtonDirective } from '../../directives/google-sign-in-but
 })
 export class LandingComponent {
   readonly stats = [
-    { value: '9', label: 'course books' },
-    { value: '195', label: 'chapters' },
+    { value: '6', label: 'books to study' },
+    { value: '195', label: 'chapters and exam parts' },
     { value: '79', label: 'grammar units' },
-    { value: 'B1 · B2', label: 'Staatsexamen 2023–2025' },
+    { value: 'A2 · B1 · B2', label: 'practice exams' },
   ];
 
   readonly features = [
     {
       icon: '📚',
       title: 'Study Book',
-      text: 'Read the chapters of Nederlands in gang, the Delftse methode (A1, A2), Teach Yourself Dutch, short stories, Twee duifjes and a 79-unit grammar course. Every chapter has its word list with English and exercises you can play.',
+      text: 'Read the chapters of NL in Gang, the Delftse methode (A1–A2), Teach Yourself Dutch, Short Stories in Dutch, Er waren eens twee duifjes and a 79-unit grammar course. Every chapter has its word list with English, and many have exercises you can play.',
       path: '/study-book',
       cta: 'Open the books',
     },
     {
       icon: '📝',
       title: 'Exams',
-      text: 'Staatsexamen NT2 B1 and B2 papers from 2023 to 2025 with the official answer keys and audio, plus Inburgering A2. Exam mode runs the official timer, free mode lets you check each section, and review shows every answer.',
+      text: 'Inburgering A2 practice exams and the Staatsexamen NT2 B1 and B2 practice exams from 2023 to 2025, with the official answer keys and audio. Exam mode runs the timer, free mode lets you check each section, and review shows every answer.',
       path: '/exams',
       cta: 'Try an exam',
     },
     {
       icon: '✍️',
       title: 'Writing feedback',
-      text: 'Write your Schrijven answer and get a score on the official criteria, corrections, an improved version of your text and links to the grammar units worth another look.',
+      text: 'Write your Schrijven answer and get a score on the exam’s criteria, corrections, an improved version of your text and links to the grammar units worth another look.',
       path: '/exams',
       cta: 'Practise writing',
     },
     {
       icon: '🔊',
       title: 'Listening',
-      text: 'Press the speaker next to a word or a sentence and hear it read by a Dutch voice, so you learn how it sounds, not just how it looks.',
+      text: 'Sign in and press the speaker next to a word or a sentence to hear it read by a natural Dutch voice, at the speed you choose in Settings.',
       path: '/study-book',
       cta: 'Hear a chapter',
     },
@@ -89,7 +89,7 @@ export class LandingComponent {
     { title: 'Select', text: 'Highlight a word or a sentence.' },
     { title: 'Listen, translate, ask', text: 'Hear it, understand it, ask about it.' },
     { title: 'Practise', text: 'Exercises, flashcards and quizzes.' },
-    { title: 'Take the exam', text: 'Timed, with the official keys.' },
+    { title: 'Take the exam', text: 'Timed, with answer keys and review.' },
   ];
 
   constructor(public authService: AuthService) {}

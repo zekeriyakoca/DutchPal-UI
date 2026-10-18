@@ -47,6 +47,7 @@ export class TtsService {
     this.request = this.apiService.textToSpeech(text).subscribe({
       next: (mp3) => {
         this.audio.src = URL.createObjectURL(mp3);
+        this.audio.playbackRate = this.userPreferences.get('general.voiceSpeed', 1); // Settings → General
         this.audio.play().catch(() => this.stop());
       },
       error: () => {

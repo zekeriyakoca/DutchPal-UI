@@ -29,15 +29,28 @@ import { UserPreferencesService } from '../../services/user-preferences.service'
         </span>
       </span>
     </label>
+
+    <div class="mt-6">
+      <p id="voice-speed-label" class="field-label">Voice speed</p>
+      <div class="segmented" role="group" aria-labelledby="voice-speed-label">
+        @for (speed of voiceSpeeds; track speed) {
+        <button type="button" [attr.aria-pressed]="voiceSpeed() === speed" (click)="setVoiceSpeed(speed)">{{ speed }}×</button>
+        }
+      </div>
+      <p class="mt-2 text-xs text-ink-subtle">How fast "Listen" reads. Slower helps with new words.</p>
+    </div>
   </section>`,
 })
 export class GeneralSettingsComponent {
   aiAssistant = signal<'chatgpt' | 'claude'>('chatgpt');
   useAdvancedVoice = signal(false);
+  readonly voiceSpeeds = [0.5, 0.75, 1, 1.25];
+  voiceSpeed = signal(1);
 
   constructor(private userPreferences: UserPreferencesService) {
     this.aiAssistant.set(userPreferences.get('general.aiAssistant', 'chatgpt'));
     this.useAdvancedVoice.set(userPreferences.get('general.useAdvancedVoice', false));
+    this.voiceSpeed.set(userPreferences.get('general.voiceSpeed', 1));
   }
 
   setAiAssistant(assistant: 'chatgpt' | 'claude') {
@@ -48,5 +61,10 @@ export class GeneralSettingsComponent {
   setUseAdvancedVoice(value: boolean) {
     this.useAdvancedVoice.set(value);
     this.userPreferences.set('general.useAdvancedVoice', value);
+  }
+
+  setVoiceSpeed(speed: number) {
+    this.voiceSpeed.set(speed);
+    this.userPreferences.set('general.voiceSpeed', speed);
   }
 }
