@@ -2,7 +2,14 @@
 <!-- Kept inside the viewport on narrow screens; sits just above the selection. -->
 <div role="toolbar" aria-label="Selected text"
   class="absolute z-50 flex -translate-y-3 items-center gap-0.5 rounded-full border border-line bg-white p-1 shadow-pop"
-  [style.top.px]="position.top" [style.left]="'min(' + position.left + 'px, calc(100% - 9.5rem))'">
+  [style.top.px]="position.top" [style.left]="'min(' + position.left + 'px, calc(100% - ' + (isAsking ? '17rem' : '9.5rem') + '))'">
+
+  @if(isAsking){
+  <input #question type="text" maxlength="300" enterkeyhint="send" [attr.aria-label]="'Ask ' + assistant.name"
+    [placeholder]="'Ask ' + assistant.name + ' about it (Enter)'"
+    class="field absolute bottom-full left-0 mb-2 w-64 shadow-pop"
+    (keydown.enter)="ask(question.value)" (keydown.escape)="isAsking = false" />
+  }
 
   <button type="button" class="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-canvas" (click)="translate()" title="Translate" aria-label="Translate" [style.color]="'#E8930C'">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -11,7 +18,7 @@
         d="m10.5 21 5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 0 1-3.827-5.802" />
     </svg>
   </button>
-  <button type="button" class="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-canvas" (click)="talkAbout()" title="Ask ChatGPT about it" aria-label="Ask ChatGPT about it" [style.color]="'#3A64B3'">
+  <button type="button" class="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-canvas" (click)="toggleAsk()" [title]="'Ask ' + assistant.name" [attr.aria-label]="'Ask ' + assistant.name" [attr.aria-expanded]="isAsking" [style.color]="'#3A64B3'">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
       class="size-5">
       <path stroke-linecap="round" stroke-linejoin="round"

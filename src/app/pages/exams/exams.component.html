@@ -39,7 +39,7 @@
   <master-content>
     <article #content class="prose mx-auto min-h-[16rem] max-w-reading scroll-mt-24 rounded-control"
       [appSpinUntil]="isLoading()">
-      <div appShowSelectionOptions>
+      <div appShowSelectionOptions [askContext]="askContext()">
         @if (chapter(); as ch) {
         <p class="not-prose text-sm font-medium text-accent-600">{{ch.book_title}}</p>
         <h1 class="!mb-3 !mt-1 text-3xl">{{ch.title}}</h1>

@@ -1,10 +1,24 @@
 import { first, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { UserPreferencesService } from '../../services/user-preferences.service';
 import { ToastService } from './../../services/toast.service';
-import { Component, input, signal, computed } from '@angular/core';
+import { Component, ElementRef, signal, computed, viewChild } from '@angular/core';
 import { filter, switchMap } from 'rxjs/operators';
 import { WordTranslation } from '../../models/apiResponse';
 import { NotionNounDto, NotionVerbDto } from '../../models/notionModels';
+
+// What the user is reading, so the AI assistant gets some context with the selection.
+export interface AskContext {
+  level: string | null; // CEFR level, e.g. 'A2'
+  source: string; // a sentence like: I'm reading "Book", chapter 3 "Title".
+}
+
+const AI_ASSISTANTS = {
+  chatgpt: { name: 'ChatGPT', url: 'https://chatgpt.com/?q=' },
+  claude: { name: 'Claude', url: 'https://claude.ai/new?q=' },
+};
+// Keeps the link short; the assistant only needs the selection, not the whole page.
+const MAX_ASK_TEXT = 1500;
 
 @Component({
   selector: 'app-selection-options',
@@ -16,11 +30,18 @@ export class SelectionOptionsComponent {
   selectedText = signal('');
   visible = false;
   position = { top: 0, left: 0 };
+  askContext: AskContext | null = null;
+  isAsking = false;
+  assistant = AI_ASSISTANTS.chatgpt;
+  questionInput = viewChild<ElementRef<HTMLInputElement>>('question');
 
   constructor(
     private toastService: ToastService,
-    private apiService: ApiService
-  ) {}
+    private apiService: ApiService,
+    userPreferences: UserPreferencesService
+  ) {
+    this.assistant = AI_ASSISTANTS[userPreferences.get('general.aiAssistant', 'chatgpt')];
+  }
 
   show(x: number, y: number) {
     this.position = { top: y, left: x };
@@ -37,16 +58,30 @@ export class SelectionOptionsComponent {
     return text.length > 0 && text.split(' ').length <= 2;
   });
 
-  talkAbout() {
-    window.open(
-      'https://chat.openai.com/?q=' + encodeURIComponent(this.generatePrompt()),
-      '_blank'
-    );
+  toggleAsk() {
+    this.isAsking = !this.isAsking;
+    setTimeout(() => this.questionInput()?.nativeElement.focus());
   }
 
-  generatePrompt(): string {
-    const text = this.selectedText();
-    return `I'm learning Dutch. Please explain the general structure of this text along with the translation in English: "${text}". Only highlight noteworthy grammar or vocabulary — skip unnecessary details`;
+  ask(question: string) {
+    window.open(
+      this.assistant.url + encodeURIComponent(this.generatePrompt(question.trim())),
+      '_blank'
+    );
+    this.isAsking = false;
+  }
+
+  generatePrompt(question: string): string {
+    let text = this.selectedText();
+    if (text.length > MAX_ASK_TEXT) text = text.slice(0, MAX_ASK_TEXT) + '…';
+    const level = this.askContext?.level ? ` (level ${this.askContext.level})` : '';
+    return [
+      `I'm learning Dutch${level}.${this.askContext ? ' ' + this.askContext.source : ''}`,
+      `Selected text: "${text}"`,
+      question
+        ? `My question: ${question}`
+        : 'Please explain the general structure of this text along with the translation in English. Only highlight noteworthy grammar or vocabulary, skip unnecessary details.',
+    ].join('\n\n');
   }
 
   explain() {
